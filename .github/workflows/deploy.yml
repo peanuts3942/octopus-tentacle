@@ -1,0 +1,72 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main, develop]
+  workflow_dispatch:
+
+jobs:
+  test:
+    uses: ./.github/workflows/lint.yml
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: test
+    environment: ${{ github.ref_name == 'main' && 'production' || 'staging' }}
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.2.1
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script_stop: true
+          script: |
+            cd ${{ vars.DEPLOY_PATH }}
+
+            echo "==> Pulling latest code..."
+            git config --global --add safe.directory ${{ vars.DEPLOY_PATH }}
+            git fetch origin ${{ github.ref_name }}
+            git reset --hard origin/${{ github.ref_name }}
+
+            echo "==> Building frontend assets..."
+            npm ci
+            npm run build
+
+            echo "==> Building Docker image (zero-downtime: build BEFORE restart)..."
+            docker compose build backend
+
+            echo "==> Stopping workers before migrations..."
+            docker compose stop horizon scheduler || true
+
+            echo "==> Starting backend (force recreate for fresh volume mounts)..."
+            docker compose up -d --force-recreate backend nginx redis meilisearch
+
+            echo "==> Waiting for services..."
+            sleep 10
+
+            echo "==> Running migrations..."
+            if [ "${{ github.ref_name }}" = "develop" ]; then
+              echo "    (Staging: fresh database with seed)"
+              docker compose exec -T backend php artisan migrate:fresh --seed --force
+            else
+              docker compose exec -T backend php artisan migrate --force
+            fi
+
+            echo "==> Clearing caches..."
+            docker compose exec -T backend php artisan config:clear
+            docker compose exec -T backend php artisan cache:clear
+            docker compose exec -T backend php artisan route:cache
+            docker compose exec -T backend php artisan view:cache
+            docker compose exec -T backend php artisan event:cache
+
+            echo "==> Starting workers..."
+            docker compose up -d --force-recreate horizon scheduler
+
+            echo "==> Restarting Octane..."
+            docker compose exec -T backend php artisan octane:reload || docker compose restart backend
+
+            echo "==> Status check..."
+            docker compose ps
+
+            echo "==> Deployment completed!"
