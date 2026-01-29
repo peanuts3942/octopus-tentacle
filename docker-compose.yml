@@ -1,0 +1,35 @@
+services:
+  redis:
+    image: redis:7-alpine
+    container_name: octopus-tentacle-redis
+    ports:
+      - "6380:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  meilisearch:
+    image: getmeili/meilisearch:latest
+    container_name: octopus-tentacle-meilisearch
+    ports:
+      - "7701:7700"
+    volumes:
+      - meilisearch_data:/meili_data
+    environment:
+      - MEILI_ENV=development
+      - MEILI_NO_ANALYTICS=true
+      - MEILI_MASTER_KEY=octopus_dev_key_change_in_prod
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:7700/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  redis_data:
+  meilisearch_data:
