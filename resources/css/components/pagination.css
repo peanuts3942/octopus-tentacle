@@ -1,0 +1,127 @@
+/* Pagination Component */
+.pagination {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-items: center;
+    padding: 24px 0;
+}
+
+
+.pagination-number {
+    font-size: 14px;
+    color: #FFF;
+    font-weight: 600;
+}
+
+.pagination-buttons {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.pagination-button {
+    display: inline-flex;
+    height: 40px;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #FFF;
+    background-color: #1A1A1A;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.1s ease-in-out;
+    text-decoration: none;
+}
+
+.pagination-button:hover {
+    background-color: #1A1A1A80;
+}
+
+.pagination-button--disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.pagination-icon {
+    width: 16px;
+    height: 16px;
+}
+
+.pagination-numbers {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.pagination-number-button {
+    display: inline-flex;
+    height: 40px;
+    width: 40px;
+    align-items: center;
+    justify-content: center;
+    padding: 12px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #FFF;
+    background-color: #1A1A1A;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.1s ease-in-out;
+    text-decoration: none;
+}
+
+.pagination-number-button:hover {
+    background-color: #1A1A1A80;
+}
+
+.pagination-number-button--active {
+    color: var(--main-color);
+    cursor: default;
+}
+
+/* .pagination-number-button--active:hover {
+} */
+
+.pagination-dots {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 24px;
+    height: 24px;
+    color: var(--silver);
+    font-weight: 500;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+    .pagination-buttons {
+        gap: 8px;
+    }
+
+    .pagination-button {
+        font-size: 14px;
+        padding-inline: 6px;
+    }
+
+    .pagination-numbers {
+        gap: 8px;
+    }
+
+    .pagination-number-button {
+        font-size: 14px;
+    }
+
+    .pagination-dots {
+        min-width: 12px;
+        height: 12px;
+    }
+}
+

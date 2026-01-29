@@ -1,0 +1,211 @@
+/* Ajout de la classe pour bloquer le scroll */
+/* body.search-modal-open {
+    overflow: hidden;
+    width: 100%;
+} */
+
+
+.search-modal-mobile {
+    position: fixed;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    padding-top: 88px;
+    background-color: rgba(0, 0, 0, 0.95);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    z-index: 99;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-100%);
+    overflow: scroll;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .banner-visible .search-modal-mobile {
+    padding-top: 102px;
+}
+
+  .search-modal-mobile.open {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+
+  .search-modal-mobile .search-close {
+    display: flex;
+  }
+
+  .search-modal-mobile .search-form {
+    padding-bottom: 12px;
+  }
+
+
+  .search-suggestions {
+    width: 100%;
+    margin: 0 auto;
+  }
+  
+ 
+  .search-page-search-results,
+  .search-page-search {
+    display: none;
+  }
+
+  .search-page-search-results .search-form {
+    padding-top: 12px;
+  }
+
+  .search-page-search .search-form {
+    padding-block: 12px;
+  }
+
+  /* .search-input {
+    flex: 1 ;
+    height: 40px;
+    width: 100%;
+    background-color: var(--grey);
+    border-right: 1px solid transparent;
+    border-radius: var(--radius-s) 0 0 var(--radius-s);
+    padding-left: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: none;
+    color: var(--white);
+  } */
+  
+  .search-input::placeholder {
+    color: var(--silver);
+    transition: all 0.1s ease;
+  }
+
+  .search-input:focus::placeholder {
+    color: var(--white);
+  }
+  
+  .search-submit, .search-delete {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 12px;
+    min-height: 40px;
+    background-color: var(--grey);
+    border-radius: 0 var(--radius-s) var(--radius-s) 0;
+    transition: all 0.2s ease;
+  }
+
+  .search-delete {
+    border-radius: 0 !important;
+    padding-right: 0 !important;
+  }
+  
+  .search-submit .icon, 
+  .search-delete .icon {
+    height: 20px;
+    width: 20px;
+  }
+
+  .search-submit .icon .fill {
+    display: none;
+  }
+
+  .search-sliders-container {
+    width: 100%;
+    height: calc(100vh - 154px);
+    overflow: scroll;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .search-sliders-wrapper {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+  
+
+
+
+
+/* Personnalisation du bouton de réinitialisation de l'input search */
+search-modal input[type="search"]::-webkit-search-cancel-button {
+    -webkit-appearance: none;
+    appearance: none;
+    height: 20px;
+    width: 20px;
+    background-size: contain;
+    cursor: pointer;
+    filter: brightness(0) invert(1);
+    opacity: 0.7;
+    transition: opacity 0.1s ease;
+}
+
+search-modal input[type="search"]::-webkit-search-cancel-button:hover {
+    opacity: 0;
+}
+
+search-modal .search-close {
+  position: absolute;
+  top: 24px;
+  right: 12px;
+  background: var(--grey);
+  color: white;
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  z-index: 10;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease;
+}
+
+search-modal .search-close .icon {
+  height: 16px;
+  width: 16px;
+}
+
+search-modal .search-close .icon .opened {
+  display: block !important;
+}
+search-modal .search-close .icon .outline,
+search-modal .search-close .icon .fill {
+  display: none;
+}
+
+search-modal .search-bar-header {
+    width: calc(100% - 48px);
+}
+
+search-modal .search-form-header {
+  width: 100%;
+}
+
+
+.suggestion-title {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+
+
+
+@media screen and (max-width: 600px) {
+
+  search-modal .search-content {
+    padding: 12px;
+  }
+
+  .search-page-search-results,
+  .search-page-search {
+    display: flex;
+  }
+
+}

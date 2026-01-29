@@ -1,0 +1,169 @@
+sticky-header {
+    position: sticky;
+    width: 100%;
+    z-index: 100;
+    /* will-change: transform, top; */
+    background-color: var(--black);
+  }
+  
+  
+  
+  /* Animation CSS */
+  sticky-header.css-animation {
+    transition: top 0.15s cubic-bezier(0.4, 0, 0.2, 1), border-bottom 0.4s ease;
+  }
+  
+  sticky-header.css-animation.hidden {
+      /* transform: translateY(-100%); */
+    top: calc(-1 * 50px);
+  }
+  
+  sticky-header.css-animation.show {
+    /* transform: translateY(-100%); */
+    top: 0;
+  }
+  
+  
+  .nav-content {
+    z-index: 100;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
+    height: 100%;
+    height: 50px;
+    padding-inline: 12px;
+    border-bottom: 1px solid var(--grey);
+  } 
+  
+  
+  .header-mobile{
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    /* border-bottom: 1px solid var(--grey); */
+    /* height: 50px; */
+  }
+  
+  
+  
+  /* logo */
+  
+  .header-mobile .header-logo {
+    height: 20px;
+  }
+  
+  
+  
+  
+  .header-right {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 16px;
+  }
+  
+  .header-right .icon {
+    height: 20px;
+    width: 20px;
+  }
+  
+  .search-btn .icon {
+    height: 19px;
+    width: 19px;
+  }
+  
+  
+  /* telegram in header (responsive only) */
+  
+  .header-telegram {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 6px;
+  }
+  
+  .header-telegram-ico {
+    height: 24px;
+    width: 24px;
+    max-width: fit-content;
+  }
+  
+  .header-telegram-txt {
+    font-size: 14px;
+    font-weight: 700;
+    white-space: nowrap;
+    padding-top: 2px;
+  }
+  
+  
+  .header-mobile .header-notification,
+  .megamenu-btn,
+  .search-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  
+  
+  
+  /* Etat */
+  
+  body.menu-open .megamenu-btn .icon .closed,
+  .megamenu-btn .icon .opened,
+  .search-btn .icon .fill {
+    display: none;
+  }
+  
+  body.menu-open .megamenu-btn .icon .opened {
+    display: block;
+  }
+  
+  .search-modal-open .open-search-modal .icon .opened {
+    display: block !important;
+  }
+  .search-modal-open .open-search-modal .icon .outline {
+    display: none;
+  }
+  
+  
+  
+  /* ⚪️ RESPONSIVE --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- */
+  
+    
+  
+  /* tablette (3 colonnes) */
+  
+  @media screen and (max-width: 1024px) {
+  
+  
+  /* ⚪️ HEADER --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- */
+  
+      .header-mobile {
+          display: flex;
+      }
+    
+  }
+  
+  
+  
+  /* mobile (1 colonne) */
+  
+  @media screen and (max-width: 600px) {
+  
+  
+  /* ⚪️ HEADER --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- */
+  
+      .nav-content {
+        height: 42px;
+      } 
+      sticky-header.css-animation.hidden {
+        top: calc(-1 * 42px);
+      }
+  
+  
+  
+  }
