@@ -24,6 +24,11 @@
     overflow: hidden;
 }
 
+.video-player-iframe {
+    height: 100%;
+    aspect-ratio: 16/9;
+}
+
 .video-player {
     aspect-ratio: 16/9;
     height: 100%;
@@ -91,6 +96,7 @@
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
+    justify-content: center;
 }
 
 .video-category {
@@ -114,6 +120,10 @@
         height: auto;
         min-height: auto;
         max-height: auto;
+    }
+
+    .video-categories {
+        justify-content: flex-start;
     }
 
 }

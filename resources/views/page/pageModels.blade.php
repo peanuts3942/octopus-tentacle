@@ -5,13 +5,13 @@
 <main class="wrapper" id="page-models">
 
     <x-breadcrumb :items="[
-        ['name' => 'Home', 'url' => route('home')],
-        ['name' => 'All Models', 'url' => '#']
+        ['name' => t__('navigation.home'), 'url' => route('home')],
+        ['name' => t__('pages.models.title'), 'url' => '#']
     ]" />
 
     <div class="head-title-container">
-        <h1 class="head-title">{{ $h1 ?? 'Models' }}</h1>
-        <h2 class="head-title-sub">{{ $h2 ?? 'Browse all models' }}</h2>
+        <h1 class="head-title">{{ $textseo->models->h1 ?? t__('pages.models.title') }}</h1>
+        <h2 class="head-title-sub">{{ $textseo->models->h2 ?? '' }}</h2>
     </div>
 
     <div class="tags-grid">

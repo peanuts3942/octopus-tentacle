@@ -5,8 +5,8 @@
 <main class="wrapper" id="page-home">
 
     <div class="head-title-container">
-        <h1 class="head-title">{{ $h1 ?? 'Videos' }}</h1>
-        <h2 class="head-title-sub">{{ $h2 ?? 'Discover our video collection' }}</h2>
+        <h1 class="head-title">{{ $textseo->home->h1 ?? t__('pages.home.title') }}</h1>
+        <h2 class="head-title-sub">{{ $textseo->home->h2 ?? '' }}</h2>
     </div>
 
     <div class="videos-grid">

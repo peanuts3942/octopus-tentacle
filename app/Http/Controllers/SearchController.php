@@ -2,46 +2,64 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Channel;
+use App\Models\Tag;
+use App\Models\Video;
 use Illuminate\Http\Request;
-use Illuminate\Pagination\LengthAwarePaginator;
 
 class SearchController extends Controller
 {
     public function index(Request $request)
     {
-        $query = $request->get('q', '');
+        $query = trim($request->get('q', ''));
 
-        // Mock data
-        $mockVideos = collect(range(1, 12))->map(fn ($i) => (object) [
-            'id' => $i,
-            'title' => "Search Result Video {$i}",
-            'slug' => "search-result-{$i}",
-            'thumbnail_url' => 'https://placehold.co/320x180/1a1a2e/FFFFFF?text=Result+'.$i,
-            'preview_url' => null,
-            'time' => rand(60, 600),
-            'published_at' => now()->subDays(rand(1, 30)),
-            'channel' => (object) [
-                'id' => 1,
-                'name' => 'Channel Name',
-                'slug' => 'channel-name',
-            ],
-        ]);
+        if (empty($query)) {
+            return view('page.pageSearch', [
+                'query' => '',
+                'videos' => collect(),
+                'channels' => collect(),
+                'tags' => collect(),
+                'allVideos' => collect(),
+                'totalVideos' => 0,
+                'totalChannels' => 0,
+                'totalTags' => 0,
+            ]);
+        }
 
-        $videos = new LengthAwarePaginator($mockVideos, 50, 24, 1, ['path' => route('search')]);
+        // Search videos via translations
+        $videos = Video::query()
+            ->select('videos.*')
+            ->whereHas('translation', fn ($q) => $q->where('title', 'LIKE', "%{$query}%"))
+            ->where('videos.is_published', true)
+            ->notDraftForTentacle()
+            ->availableInZone()
+            ->with(['channel:id,name,slug,profile_picture_url', 'translation'])
+            ->orderBy('videos.published_at', 'desc')
+            ->limit(12)
+            ->get();
 
-        $channels = collect(range(1, 4))->map(fn ($i) => (object) [
-            'id' => $i,
-            'name' => "Model Result {$i}",
-            'slug' => "model-result-{$i}",
-        ]);
+        // Search channels
+        $channels = Channel::where('name', 'LIKE', "%{$query}%")
+            ->limit(4)
+            ->get();
 
-        $tags = collect(range(1, 4))->map(fn ($i) => (object) [
-            'id' => $i,
-            'name' => "Category Result {$i}",
-            'slug' => "category-result-{$i}",
-        ]);
+        // Search tags via translations
+        $tags = Tag::whereHas('translation', fn ($q) => $q->where('name', 'LIKE', "%{$query}%"))
+            ->with('translation')
+            ->limit(4)
+            ->get();
 
-        $allVideos = new LengthAwarePaginator($mockVideos, 100, 24, 1, ['path' => route('search')]);
+        // All videos paginated for full results
+        $allVideos = Video::query()
+            ->select('videos.*')
+            ->whereHas('translation', fn ($q) => $q->where('title', 'LIKE', "%{$query}%"))
+            ->where('videos.is_published', true)
+            ->notDraftForTentacle()
+            ->availableInZone()
+            ->with(['channel:id,name,slug,profile_picture_url', 'translation'])
+            ->orderBy('videos.published_at', 'desc')
+            ->paginate(24)
+            ->appends(['q' => $query]);
 
         return view('page.pageSearch', [
             'query' => $query,
@@ -49,9 +67,9 @@ class SearchController extends Controller
             'channels' => $channels,
             'tags' => $tags,
             'allVideos' => $allVideos,
-            'totalVideos' => empty($query) ? 0 : 50,
-            'totalChannels' => empty($query) ? 0 : 4,
-            'totalTags' => empty($query) ? 0 : 4,
+            'totalVideos' => $allVideos->total(),
+            'totalChannels' => $channels->count(),
+            'totalTags' => $tags->count(),
         ]);
     }
 }

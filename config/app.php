@@ -123,4 +123,17 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Tentacle Configuration
+    |--------------------------------------------------------------------------
+    |
+    | Configuration for multi-tenant tentacle resolution.
+    |
+    */
+
+    'tentacle_id' => env('TENTACLE_ID'),
+
+    'zone' => strtolower(env('APP_ZONE', 'fr')),
+
 ];

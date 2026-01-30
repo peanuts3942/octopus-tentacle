@@ -5,13 +5,13 @@
 <main class="wrapper" id="page-categories">
 
     <x-breadcrumb :items="[
-        ['name' => 'Home', 'url' => route('home')],
-        ['name' => 'All Categories', 'url' => '#']
+        ['name' => t__('navigation.home'), 'url' => route('home')],
+        ['name' => t__('pages.categories.title'), 'url' => '#']
     ]" />
 
     <div class="head-title-container">
-        <h1 class="head-title">{{ $h1 ?? 'Categories' }}</h1>
-        <h2 class="head-title-sub">{{ $h2 ?? 'Browse all categories' }}</h2>
+        <h1 class="head-title">{{ $textseo->categories->h1 ?? t__('pages.categories.title') }}</h1>
+        <h2 class="head-title-sub">{{ $textseo->categories->h2 ?? '' }}</h2>
     </div>
 
     <div class="tags-grid">

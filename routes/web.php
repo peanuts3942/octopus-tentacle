@@ -8,24 +8,38 @@ use App\Http\Controllers\TagController;
 use App\Http\Controllers\VideoController;
 use Illuminate\Support\Facades\Route;
 
-// Home
-Route::get('/', [HomeController::class, 'index'])->name('home');
-Route::get('/page/{page}', [HomeController::class, 'index'])->name('home.page')->where('page', '[0-9]+');
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+|
+| All routes are wrapped with the 'tentacle' middleware which resolves
+| the current tentacle from TENTACLE_ID env or domain mapping.
+|
+*/
 
-// Videos
-Route::get('/videos/{id}-{slug}', [VideoController::class, 'show'])->name('video.show')->where('id', '[0-9]+');
+Route::middleware('tentacle')->group(function () {
 
-// Categories (Tags)
-Route::get('/categories', [TagController::class, 'index'])->name('category.index');
-Route::get('/categories/{slug}', [TagController::class, 'show'])->name('category.show');
+    // Home
+    Route::get('/', [HomeController::class, 'index'])->name('home');
+    Route::get('/page/{page}', [HomeController::class, 'index'])->name('home.page')->where('page', '[0-9]+');
 
-// Models (Channels)
-Route::get('/models', [ChannelController::class, 'index'])->name('model.index');
-Route::get('/models/{slug}', [ChannelController::class, 'show'])->name('model.show');
+    // Videos
+    Route::get('/videos/{id}-{slug}', [VideoController::class, 'show'])->name('video.show')->where('id', '[0-9]+');
 
-// Search
-Route::get('/search', [SearchController::class, 'index'])->name('search');
+    // Categories (Tags)
+    Route::get('/categories', [TagController::class, 'index'])->name('category.index');
+    Route::get('/categories/{slug}', [TagController::class, 'show'])->name('category.show');
 
-// Legal
-Route::get('/dmca', [LegalController::class, 'dmca'])->name('legal.dmca');
-Route::get('/remove-content', [LegalController::class, 'removeContent'])->name('legal.remove');
+    // Models (Channels)
+    Route::get('/models', [ChannelController::class, 'index'])->name('model.index');
+    Route::get('/models/{slug}', [ChannelController::class, 'show'])->name('model.show');
+
+    // Search
+    Route::get('/search', [SearchController::class, 'index'])->name('search');
+
+    // Legal
+    Route::get('/dmca', [LegalController::class, 'dmca'])->name('legal.dmca');
+    Route::get('/remove-content', [LegalController::class, 'removeContent'])->name('legal.remove');
+
+});

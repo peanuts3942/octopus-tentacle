@@ -2,41 +2,49 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\VideoServices;
 use Illuminate\Http\Request;
-use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Redis;
 
 class HomeController extends Controller
 {
+    private const VIEW_TTL = 300; // 5 minutes
+
+    public function __construct(
+        protected VideoServices $videoServices
+    ) {}
+
     public function index(Request $request, int $page = 1)
     {
-        // Mock data for skeleton
-        $mockVideos = collect(range(1, 24))->map(fn ($i) => (object) [
-            'id' => $i,
-            'title' => "Video Title {$i}",
-            'slug' => "video-title-{$i}",
-            'thumbnail_url' => 'https://placehold.co/320x180/1a1a2e/FFFFFF?text=Video+'.$i,
-            'preview_url' => null,
-            'time' => rand(60, 600),
-            'published_at' => now()->subDays(rand(1, 30)),
-            'channel' => (object) [
-                'id' => 1,
-                'name' => 'Channel Name',
-                'slug' => 'channel-name',
-            ],
-        ]);
+        $tentacleId = $request->attributes->get('tentacle_id');
+        $isAjax = $request->ajax();
 
-        $videos = new LengthAwarePaginator(
-            $mockVideos,
-            120,
-            24,
-            $page,
-            ['path' => route('home')]
-        );
+        // View cache (only page 1, non-AJAX)
+        $viewCacheKey = 'cache:view:page:pageHome';
+        if (! $isAjax && $page == 1) {
+            $cachedView = Redis::get($viewCacheKey);
+            if ($cachedView) {
+                return response($cachedView);
+            }
+        }
 
-        return view('page.pageHome', [
-            'videos' => $videos,
+        $result = $this->videoServices->getFeedVideos($tentacleId, $page, $request);
+
+        // AJAX request returns array
+        if (is_array($result)) {
+            return response()->json($result);
+        }
+
+        $view = view('page.pageHome', [
+            'videos' => $result,
             'h1' => 'Latest Videos',
             'h2' => 'Discover our collection',
-        ]);
+        ])->render();
+
+        if (! $isAjax && $page == 1) {
+            Redis::setex($viewCacheKey, self::VIEW_TTL, $view);
+        }
+
+        return response($view);
     }
 }

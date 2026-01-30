@@ -6,7 +6,7 @@
 
     @php
         $breadcrumbItems = [
-            ['name' => 'Home', 'url' => route('home')],
+            ['name' => t__('navigation.home'), 'url' => route('home')],
         ];
 
         if ($video->channel && $video->channel->slug) {
@@ -24,9 +24,20 @@
     <div class="player-wrapper">
         <img class="background-video-player" src="{{ $video->thumbnail_url }}"/>
         <div class="player-container">
-            <div class="player-broken-container">
-                <p class="player-broken-text">Player placeholder</p>
-            </div>
+            @if($video->player_url)
+                <iframe
+                    src="{{ $video->player_url }}"
+                    class="video-player-iframe"
+                    allowfullscreen
+                    frameborder="0"
+                    scrolling="no"
+                    allow="autoplay; encrypted-media"
+                ></iframe>
+            @else
+                <div class="player-broken-container">
+                    <p class="player-broken-text">{{ t__('common.player_unavailable') }}</p>
+                </div>
+            @endif
         </div>
     </div>
 
@@ -34,7 +45,7 @@
         <div class="video-infos">
             <h1 class="video-title">{{ $video->title }}</h1>
             <div class="video-date-channel-container">
-                <p class="video-date">{{ $video->published_at?->format('F j, Y') ?? 'Unknown date' }}</p>
+                <p class="video-date">{{ $video->published_at?->translatedFormat('j F Y') ?? t__('common.unknown_date') }}</p>
                 @if($video->channel)
                 <span class="video-separator">•</span>
                 <h4 class="video-channel trans">
@@ -54,7 +65,7 @@
         </div>
 
         <div class="heading-container">
-            <span class="heading-text">Related videos</span>
+            <span class="heading-text">{{ t__('tab_filters.more_videos') }}</span>
         </div>
 
         <div class="videos-grid">

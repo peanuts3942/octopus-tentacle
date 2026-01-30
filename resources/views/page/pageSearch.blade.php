@@ -5,8 +5,8 @@
 <main class="wrapper" id="page-search">
 
     <x-breadcrumb :items="[
-        ['name' => 'Accueil', 'url' => route('home')],
-        ['name' => 'Recherche ' . $query, 'url' => '#']
+        ['name' => t__('navigation.home'), 'url' => route('home')],
+        ['name' => t__('pages.search.title'), 'url' => '#']
     ]" />
 
     {{-- Search Bar --}}
@@ -16,7 +16,7 @@
                 type="text"
                 name="q"
                 class="search-input"
-                placeholder="Rechercher des vidéos, modèles ou catégories..."
+                placeholder="{{ t__('pages.search.placeholder') }}"
                 value="{{ $query }}"
                 autofocus
             >
@@ -30,30 +30,30 @@
         {{-- No results --}}
         <div class="search-no-results">
             @if(empty($query))
-                <h1>Rechercher des vidéos, modèles ou catégories...</h2>
+                <h1>{{ t__('pages.search.placeholder') }}</h1>
             @else
-                <h1>Aucun résultat trouvé pour "{{ $query }}"</h2>
+                <h1>{{ t__('pages.search.no_results', ['query' => $query]) }}</h1>
             @endif
-            <p>Essayez de modifier vos termes de recherche ou explorez les catégories et les modèles</p>
+            <p>{{ t__('pages.search.try_different') }}</p>
             <div class="search-suggestions">
-                <a href="{{ route('home') }}" class="suggestion-link">Voir toutes les videos</a>
-                <a href="{{ route('category.index') }}" class="suggestion-link">Explorer les categories</a>
-                <a href="{{ route('model.index') }}" class="suggestion-link">Voir toutes les modèles</a>
+                <a href="{{ route('home') }}" class="suggestion-link">{{ t__('pages.search.see_all_videos') }}</a>
+                <a href="{{ route('category.index') }}" class="suggestion-link">{{ t__('pages.search.explore_categories') }}</a>
+                <a href="{{ route('model.index') }}" class="suggestion-link">{{ t__('pages.search.see_all_models') }}</a>
             </div>
         </div>
     @else
         {{-- Results --}}
         <div class="search-results-summary">
-            <h1>Résultats de la recherche pour "{{ $query }}"</h1>
+            <h1>{{ t__('pages.search.results_for', ['query' => $query]) }}</h1>
             <p class="results-count">
                 @if($totalVideos > 0)
-                    {{ $totalVideos }} {{ $totalVideos === 1 ? 'vidéo' : 'vidéos' }}
+                    {{ $totalVideos }} {{ $totalVideos === 1 ? t__('common.video') : t__('common.videos') }}
                 @endif
                 @if($totalChannels > 0)
-                    {{ $totalVideos > 0 ? ', ' : '' }}{{ $totalChannels }} {{ $totalChannels === 1 ? 'modèle' : 'modèles' }}
+                    {{ $totalVideos > 0 ? ', ' : '' }}{{ $totalChannels }} {{ $totalChannels === 1 ? t__('common.model') : t__('common.models') }}
                 @endif
                 @if($totalTags > 0)
-                    {{ $totalVideos > 0 || $totalChannels > 0 ? ', ' : '' }}{{ $totalTags }} {{ $totalTags === 1 ? 'catégorie' : 'catégories' }}
+                    {{ $totalVideos > 0 || $totalChannels > 0 ? ', ' : '' }}{{ $totalTags }} {{ $totalTags === 1 ? t__('common.category') : t__('common.categories') }}
                 @endif
             </p>
         </div>
@@ -62,7 +62,7 @@
         @if($totalChannels > 0)
             <div class="search-section">
                 <div class="heading-container">
-                    <h2 class="heading-text">Modèles ({{ $totalChannels }})</h2>
+                    <h2 class="heading-text">{{ t__('pages.models.title') }} ({{ $totalChannels }})</h2>
                 </div>
 
                 <div class="tags-grid">
@@ -79,7 +79,7 @@
         @if($totalTags > 0)
             <div class="search-section">
                 <div class="heading-container">
-                    <h2 class="heading-text">Catégories ({{ $totalTags }})</h2>
+                    <h2 class="heading-text">{{ t__('pages.categories.title') }} ({{ $totalTags }})</h2>
                 </div>
 
                 <div class="tags-grid">
@@ -96,36 +96,20 @@
         @if($totalVideos > 0)
             <div class="search-section">
                 <div class="heading-container">
-                    <h2 class="heading-text">Vidéos ({{ $totalVideos }})</h2>
+                    <h2 class="heading-text">{{ t__('pages.videos.title') }} ({{ $totalVideos }})</h2>
                 </div>
 
                 <div class="videos-grid">
-                    @foreach ($videos as $video)
+                    @foreach ($allVideos as $video)
                         @include('components.cardVideo', ['video' => $video])
                     @endforeach
                 </div>
 
-                @if($videos->hasPages() && $totalVideos > 24)
-                    @include('components.pagination-simple', ['paginator' => $videos])
+                @if($allVideos instanceof \Illuminate\Pagination\LengthAwarePaginator && $allVideos->hasPages())
+                    @include('components.pagination-simple', ['paginator' => $allVideos])
                 @endif
             </div>
         @endif
-    @endif
-
-    @if(empty($query) || $totalVideos < 24)
-
-        <div class="heading-container heading-container-search-all-videos">
-            <h2 class="heading-text">Toutes les videos</h2>
-        </div>
-
-        <div class="videos-grid">
-            @foreach ($allVideos as $video)
-                @include('components.cardVideo', ['video' => $video])
-            @endforeach
-        </div>
-
-        @include('components.pagination-simple', ['paginator' => $allVideos])
-
     @endif
 
 </main>
