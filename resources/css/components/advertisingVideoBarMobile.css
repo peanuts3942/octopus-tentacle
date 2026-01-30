@@ -1,0 +1,101 @@
+.active-video-mobile-ad,
+.banner-under-player-mobile {
+  display: none;
+}
+
+.premium-btn-remove-ads-bar-video {
+    text-align: center;
+    white-space: nowrap;
+    background-color: var(--green);
+    font-size: 12px;
+    font-weight: 700;
+    transition: all .2s ease;
+    padding-inline: 12px;
+    padding-block: 8px;
+    border-radius: 9999px;
+  }
+
+@media screen and (max-width: 600px) {
+   
+
+/* ⚪️ ACTIVE VIDEO --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- */
+
+    .active-video-mobile-ad {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid var(--grey);
+        padding: 8px 12px;
+    }
+
+    .banner-under-player-mobile {
+        display: flex;
+        justify-content: center;
+        height: fit-content;
+    }
+
+    .active-video-mobile-ad-img {
+        width: 40px;
+        height: 40px;
+        border-radius: 100px;
+        margin-right: 10px;
+    }
+
+    .active-video-mobile-ad-txt {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        padding-left: 2px;
+        gap: 3px;
+    }
+
+    .active-video-mobile-ad-title {
+        font-size: 12px;
+        font-weight: 700;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        width: fit-content;
+        position: relative;
+        z-index: 1;
+    }
+
+    .active-video-mobile-ad-title:after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: -2px;
+        width: calc(100% + 4px);
+        height: 100%;
+        background-color: #8B3802;
+        z-index: -1;
+    }
+
+    .active-video-mobile-ad-description {
+        font-size: 10px;
+        font-weight: 500;
+        color: var(--silver);
+        text-transform: none;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+
+    .active-video-mobile-ad-btn {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        padding: 8px 12px;
+        background-color: var(--orangee);
+        border: 1px solid var(--orange);
+        border-radius: 100px;
+        font-size: 12px;
+        font-weight: 900;
+        height: fit-content;
+        transition: all 0.2s ease;
+    
+    }
+}

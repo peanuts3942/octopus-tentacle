@@ -1,0 +1,458 @@
+/* Search Bar Header */
+.search-bar-header {
+    position: relative;
+}
+
+.search-form-header {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.search-submit-btn {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: #8b8b8b;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px;
+    transition: color 0.1s ease;
+}
+
+.search-submit-btn .icon {
+    height: 18px;
+    width: 18px;
+}
+
+.search-submit-btn .icon .fill {
+    display: none;
+}
+
+.search-submit-btn .icon path {
+    fill: var(--silver);
+    transition: fill 0.1s ease;
+}
+
+.search-submit-btn:hover {
+    color: var(--main-color);
+}
+
+.search-submit-btn:hover .icon path {
+    fill: var(--white);
+}
+
+/* Autocomplete Dropdown */
+.search-autocomplete {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    right: 0;
+    background: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    max-height: 500px;
+    overflow-y: auto;
+    z-index: 1000;
+}
+
+.search-autocomplete.hidden {
+    display: none;
+}
+
+.autocomplete-section {
+    padding: 12px 0;
+    border-bottom: 1px solid #333;
+}
+
+.autocomplete-section:last-child {
+    border-bottom: none;
+}
+
+.autocomplete-section-title {
+    padding: 4px 16px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #8b8b8b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.autocomplete-item {
+    display: flex;
+    align-items: center;
+    padding: 8px 16px;
+    color: #fff;
+    text-decoration: none;
+    transition: background-color 0.2s;
+}
+
+.autocomplete-item:hover {
+    background-color: #252525;
+}
+
+/* Video Items */
+.autocomplete-video {
+    gap: 12px;
+}
+
+.autocomplete-video-thumb {
+    width: 80px;
+    height: 45px;
+    object-fit: cover;
+    border-radius: 4px;
+    flex-shrink: 0;
+}
+
+.autocomplete-video-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.autocomplete-video-title {
+    font-size: 14px;
+    font-weight: 500;
+    color: #fff;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.autocomplete-video-channel {
+    font-size: 12px;
+    color: #8b8b8b;
+    margin-top: 2px;
+}
+
+/* Channel Items */
+.autocomplete-channel {
+    gap: 12px;
+}
+
+.autocomplete-channel-avatar,
+.autocomplete-channel-avatar-placeholder {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.autocomplete-channel-avatar {
+    object-fit: cover;
+}
+
+.autocomplete-channel-avatar-placeholder {
+    background-color: var(--main-color);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.autocomplete-channel-name {
+    font-size: 14px;
+    font-weight: 500;
+}
+
+/* Tag Items */
+.autocomplete-tag {
+    gap: 8px;
+}
+
+.autocomplete-tag-name {
+    font-size: 14px;
+    font-weight: 500;
+}
+
+/* Video Count */
+.autocomplete-video-count {
+    padding: 12px 16px;
+    color: #8b8b8b;
+    font-size: 14px;
+}
+
+/* Empty State */
+.autocomplete-empty {
+    padding: 24px 16px;
+    text-align: center;
+    color: #8b8b8b;
+}
+
+/* See All Results Link */
+.autocomplete-see-all {
+    display: block;
+    padding: 12px 16px;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--main-color);
+    text-decoration: none;
+    border-top: 1px solid #333;
+    transition: background-color 0.2s;
+}
+
+.autocomplete-see-all:hover {
+    background-color: #252525;
+}
+
+/* Search Page Styles */
+#page-search {
+    padding-bottom: 64px;
+}
+
+.search-container {
+    margin-bottom: 32px;
+    display: none;
+}
+
+.search-form {
+    position: relative;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.search-input {
+    width: 100%;
+    padding: 8px 48px 8px 20px;
+    background: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 8px;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 600;
+    transition: border-color 0.1s ease;
+}
+
+.search-input:focus {
+    outline: none;
+    box-shadow: none;
+    border-color: var(--main-color);
+}
+
+/* Empty State */
+.search-empty-state {
+    text-align: center;
+    padding: 64px 32px;
+    color: #8b8b8b;
+}
+
+.search-empty-state svg {
+    margin: 0 auto 24px;
+}
+
+.search-empty-state h2 {
+    font-size: 24px;
+    color: #fff;
+    margin: 0 0 12px;
+}
+
+.search-empty-state p {
+    font-size: 16px;
+    margin: 0;
+}
+
+/* No Results */
+.search-no-results {
+    text-align: center;
+    padding: 64px 32px 0 32px;
+}
+
+.heading-container-search-all-videos {
+    margin-top: 80px;
+}
+
+.search-no-results h2,
+.search-no-results h1 {
+    font-size: 24px;
+    font-weight: 600;
+    color: #fff;
+    margin: 0 0 12px;
+}
+
+.search-no-results p {
+    font-size: 16px;
+    font-weight: 500;
+    color: #8b8b8b;
+    margin: 0 0 32px;
+}
+
+.search-suggestions {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.suggestion-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: fit-content;
+    padding: 12px 24px;
+    background: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 8px;
+    color: #fff;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.suggestion-link:hover {
+    background: #252525;
+    border-color: var(--main-color);
+    color: var(--main-color);
+}
+
+/* Results Summary */
+.search-results-summary {
+    margin-bottom: 32px;
+}
+
+.search-results-summary h1 {
+    font-size: 28px;
+    font-weight: 600;
+    color: #fff;
+    margin: 0 0 8px;
+}
+
+.results-count {
+    font-size: 14px;
+    color: #8b8b8b;
+    margin: 0;
+}
+
+/* Search Sections */
+.search-section {
+    margin-bottom: 48px;
+}
+
+.search-section:last-child {
+    margin-bottom: 0;
+}
+
+/* Channels List */
+.channels-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px;
+    margin-top: 16px;
+}
+
+.channel-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    background: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: all 0.2s;
+}
+
+.channel-item:hover {
+    background: #252525;
+    border-color: var(--main-color);
+}
+
+.channel-avatar,
+.channel-avatar-placeholder {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.channel-avatar {
+    object-fit: cover;
+}
+
+.channel-avatar-placeholder {
+    background-color: var(--main-color);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 20px;
+}
+
+.channel-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.channel-name {
+    font-size: 16px;
+    font-weight: 600;
+    color: #fff;
+    margin: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Tags List */
+.tags-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 16px;
+}
+
+.tag-item {
+    padding: 10px 20px;
+    background: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 20px;
+    color: #fff;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.tag-item:hover {
+    background: var(--main-color);
+    border-color: var(--main-color);
+    color: #fff;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .channels-list {
+        grid-template-columns: 1fr;
+    }
+
+    .search-results-summary h1 {
+        font-size: 22px;
+    }
+
+    .autocomplete-video-thumb {
+        width: 60px;
+        height: 34px;
+    }
+    .search-container {
+        display: block;
+    }
+
+    .search-input {
+        padding: 14px 48px 14px 20px;
+    }
+
+    .search-no-results {
+        padding: 12px 32px 0 32px;
+    }
+    .heading-container-search-all-videos {
+        margin-top: 48px;
+    }
+}

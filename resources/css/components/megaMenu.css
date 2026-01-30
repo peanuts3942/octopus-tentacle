@@ -1,0 +1,350 @@
+/* ⚪️ MENU (responsive only) --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- */
+
+
+/* Ajout de la classe pour bloquer le scroll */
+body.menu-open,
+body.search-modal-open {
+    overflow: hidden;
+    width: 100%;
+}
+
+.menu {
+    position: fixed;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    padding: 42px 0 150px 0;
+    background-color: rgba(0, 0, 0, 0.95);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    z-index: 99;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-100%);
+    overflow: scroll;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.banner-visible .menu {
+    padding: 78px 0 120px 0;
+}
+
+
+.menu.open {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+}
+
+
+.megamenu-content {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 12px;
+    padding-inline: 12px;
+    max-width: 375px;
+    width: 100%;
+    padding-block: 24px;
+}
+
+
+
+
+
+
+
+
+
+/* nav */
+
+.menu-nav {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    list-style: none;
+    width: 100%;
+}
+
+/* .menu-nav .megamenu-nav-item:nth-child(1) { grid-column: span 3; }
+.menu-nav .megamenu-nav-item:nth-child(2) { grid-column: span 3; }
+.menu-nav .megamenu-nav-item:nth-child(3) { grid-column: span 6; }
+.menu-nav .megamenu-nav-item:nth-child(4) { grid-column: span 6; }
+.menu-nav .megamenu-nav-item:nth-child(5) { grid-column: span 6; } */
+
+
+.menu-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    width: 100%;
+    aspect-ratio: 1;
+    transition: all 0.2s ease;
+}
+
+.menu-nav .nav-item-with-submenu {
+    grid-column: span 6;
+    background-color: var(--grey);
+    border-radius: var(--radius-s);
+}
+
+.nav-item-with-submenu .menu-btn {
+    aspect-ratio: auto;
+    flex-direction: row;
+    padding-block: 24px;
+    gap: 12px;
+}
+
+.megamenu-nav-item .nav-submenu {
+    display: grid;
+    grid-template-columns: 50% 50%;
+    column-gap: 0px;
+    align-items: center;
+    overflow: hidden;
+    opacity: 0;
+    max-height: 0;
+    padding-block: 0;
+}
+
+.nav-submenu a {
+    width: 100%;
+    padding-left: 24px;
+    transition: all 0.2s ease;
+  }
+
+  .nav-submenu a span {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--white);
+    transition: all 0.2s ease;
+  }
+
+.megamenu-nav-item .nav-submenu.active {
+    padding-bottom: 24px;
+}
+
+.nav-submenu.active {
+    opacity: 1;
+    visibility: visible;
+    max-height: fit-content;
+    /* overflow: visible; */
+  }
+  
+
+.menu-toggle-icon {
+    position: absolute;
+    right: 24px;
+    font-size: 16px;
+    color: var(--white);
+    transition: transform 0.3s ease;
+  }
+  
+.menu-btn-image {
+    position: relative;
+    border-radius: var(--radius-s);
+    background-color: transparent;
+    overflow: hidden;
+    align-items: flex-start;
+    justify-content: flex-end;
+    padding: 12px;
+}
+
+.megamenu-bg-image {
+    width: 100%;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    z-index: -1;
+}
+
+.menu-btn-image .menu-txt-wrapper {
+    display: flex;
+    flex-direction: column;
+}
+
+.menu-btn-image .menu-txt-wrapper span {
+    font-size: 24px;
+}
+
+.menu-btn-image .menu-txt-all {
+    font-weight: 500;
+}
+
+
+/* .menu-btn.active {
+} */
+
+.menu-btn .icon {
+    height: 36px;
+    width: 36px;
+}
+
+.menu-txt {
+    font-size: 20px;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+
+
+#megamenu-nav_page-videos-mobile .icon .outline {
+    display: none;
+}
+
+
+/* Menu Account */
+
+.menu-account {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    gap: 12px;
+}
+
+.menu-account .menu-btn {
+    aspect-ratio: 16 / 9;
+    flex-direction: row;
+}
+
+.menu-account .menu-account-txt {
+    text-align: start;
+}
+
+.menu-btn.login_menu {
+    border-radius: var(--radius-s);
+    background-color: var(--grey);
+}
+
+.menu-btn.become-premium {
+    border-radius: var(--radius-s);
+    background-color: var(--green);
+    position: relative;
+    overflow: hidden;
+}
+
+.menu-btn.become-premium::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 8px;
+    background-color: #08563C70;
+}
+
+.menu-account-txt {
+    font-size: 16px;
+    text-align: center;
+    line-height: 16px;
+    font-weight: 800;
+}
+
+
+
+
+
+
+
+/* socials */
+
+.menu-socials-wrapper {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    margin-top: 12px;
+}
+
+.menu-socials-wrapper p {
+    font-size: 12px;
+    font-weight: 800;
+    text-align: center;
+    color: var(--silver);
+}
+
+
+.menu-socials {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+}
+
+
+.menu-socials-btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 100px;
+    transition: all 0.2s ease;
+}
+
+.menu-socials .icon {
+    height: 24px;
+    width: 24px;
+}
+
+
+.menu-socials-btn:hover {
+  opacity: 0.6;
+}
+
+
+.discord-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    background-color: #5865F2;
+    border-radius: 100px;
+    padding: 4px 4px 4px 10px;
+    transition: all 0.2s ease;
+}
+
+.discord-btn .discord-btn-txt {
+    font-size: 10px;
+    font-weight: 800;
+    color: white;
+}
+
+.discord-btn .icon {
+    width: 18px;
+    height: 18px;
+}
+
+.discord-btn .icon .dicord-icon-background {
+    fill: white;
+}
+
+.discord-btn .icon .discord-icon-head {
+    fill: #5865F2;
+}
+
+
+
+.nav-toggle[aria-expanded="true"] .nav-toggle-icon,
+.nav-toggle[aria-expanded="true"] .menu-toggle-icon {
+  transform: rotate(180deg);
+}
+
+
+/* mobile (3 colonnes) */
+
+@media screen and (min-width: 600px) {
+    
+    .menu {
+        padding: 92px 0 50px 0;
+    }
+  
+  }
