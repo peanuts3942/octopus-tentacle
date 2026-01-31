@@ -17,7 +17,7 @@ class TextSeoServiceProvider extends ServiceProvider
     {
         View::composer('*', function ($view) {
             $currentLocale = config('app.locale', 'en');
-            $tentacleId = config('tentacle.id');
+            $tentacleId = config('app.tentacle_id');
 
             $textseo = TranslationHelper::getSeoTexts($currentLocale, $tentacleId);
             $view->with('textseo', $textseo);

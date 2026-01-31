@@ -134,6 +134,62 @@ return [
 
     'tentacle_id' => env('TENTACLE_ID'),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Supported Locales & Subdomains & Zones algo settings
+    |--------------------------------------------------------------------------
+    |
+    | List of supported locales for the application. The locale is automatically
+    | determined by the ZONE environment variable via the SetLocale middleware.
+    |
+    */
+
+    // Tous les sous domain existant en production qui ont un supported_locales, utilisé dans la balise head exemple : <link rel="alternate" hreflang="fr" href="https://fr.tonsite.com" />
+    // 'available_subdomain' => ['en', 'fr', 'de', 'es', 'it', 'pt'],
+
+    // Permet de permettre de ne pas mettre de balise alternate dans le head, ainsi que de mettre le canonical du de la langue
+    // exemple uk.borntobefuck.com -> canonical borntobefuck.com
+    // Permet d'éviter la duplication de contenu et d'évité les malus d'indexation google
+    // 'regional_subdomains' => [
+    //     'uk' => 'en',
+    //     'us' => 'en',
+    //     'au' => 'en',
+    // ],
+
+    // 'supported_locales' => ['en', 'fr', 'de', 'es', 'it', 'pt'],
+    // 'default_locale' => 'en',
+    // 'main_domain' => '',
+
     'zone' => strtolower(env('APP_ZONE', 'fr')),
+    'zone_en_chunk' => 10,
+    'zone_en_chunk_model' => 40,
+    'zone_en_nationalities' => ['US', 'GB', 'IE', 'CA', 'AU', 'NZ', 'ZA', 'NG', 'KE', 'IN', 'SG', 'PH'],
+    'zone_fr_chunk' => 8,
+    'zone_fr_chunk_model' => 40,
+    'zone_fr_nationalities' => ['FR', 'BE', 'LU', 'MA', 'DZ', 'TN', 'CI', 'SN', 'CM'],
+    'zone_de_chunk' => 8,
+    'zone_de_chunk_model' => 40,
+    'zone_de_nationalities' => ['DE', 'AT', 'CH', 'LI'],
+    'zone_es_chunk' => 8,
+    'zone_es_chunk_model' => 40,
+    'zone_es_nationalities' => ['ES', 'MX', 'AR', 'CL', 'CO', 'PE', 'VE', 'EC', 'BO', 'GT', 'CR', 'HN', 'SV', 'NI', 'DO', 'PY', 'UY'],
+    'zone_it_chunk' => 8,
+    'zone_it_chunk_model' => 40,
+    'zone_it_nationalities' => ['IT', 'SM', 'VA', 'MT'],
+    'zone_pt_chunk' => 8,
+    'zone_pt_chunk_model' => 40,
+    'zone_pt_nationalities' => ['PT', 'BR', 'AO', 'MZ', 'CV', 'GW', 'ST', 'TL'],
+
+    // 'filter_nationalities_by_zone' => [
+    //   'en' => ['US', 'GB', 'AU'],
+    //   'fr' => ['FR', 'ES', 'US'],
+    //   'de' => ['DE', 'FR', 'US'],
+    //   'es' => ['ES', 'CO', 'US'],
+    //   'it' => ['IT', 'ES', 'US'],
+    //   'pt' => ['PT', 'BR', 'US'],
+    // ],
+
+    // 'region' => env('REGION', 'us'),
+    // 'trending_channels_by_region' => ['us', 'fr', 'de', 'es', 'it', 'pt'],
 
 ];

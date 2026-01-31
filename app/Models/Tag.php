@@ -7,12 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
-use Laravel\Scout\Searchable;
 
 class Tag extends Model
 {
-    use Searchable;
-
     protected $fillable = [
         'exclude_from_translation',
     ];
@@ -57,22 +54,5 @@ class Tag extends Model
         return Attribute::make(
             get: fn () => $this->translation?->slug ?? $this->id
         );
-    }
-
-    // MeiliSearch
-    public function toSearchableArray(): array
-    {
-        $this->loadMissing('translation');
-
-        return [
-            'id' => $this->id,
-            'name' => $this->name,
-            'slug' => $this->slug,
-        ];
-    }
-
-    protected function makeAllSearchableUsing($query)
-    {
-        return $query->with('translation');
     }
 }

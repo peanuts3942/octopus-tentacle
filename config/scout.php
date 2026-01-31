@@ -1,5 +1,8 @@
 <?php
 
+use App\Models\Channel;
+use App\Models\Video;
+
 return [
 
     /*
@@ -16,7 +19,7 @@ return [
     |
     */
 
-    'driver' => env('SCOUT_DRIVER', 'collection'),
+    'driver' => env('SCOUT_DRIVER', 'meilisearch'),
 
     /*
     |--------------------------------------------------------------------------
@@ -42,7 +45,13 @@ return [
     |
     */
 
-    'queue' => env('SCOUT_QUEUE', false),
+    'queue' => [
+        'connection' => 'redis',
+        'queue' => 'scout',
+        'retry_after' => 300,
+        'tries' => 3,
+        'timeout' => 600,
+    ],
 
     /*
     |--------------------------------------------------------------------------
@@ -69,8 +78,8 @@ return [
     */
 
     'chunk' => [
-        'searchable' => 500,
-        'unsearchable' => 500,
+        'searchable' => 50,
+        'unsearchable' => 50,
     ],
 
     /*
@@ -115,12 +124,7 @@ return [
     'algolia' => [
         'id' => env('ALGOLIA_APP_ID', ''),
         'secret' => env('ALGOLIA_SECRET', ''),
-        'index-settings' => [
-            // 'users' => [
-            //     'searchableAttributes' => ['id', 'name', 'email'],
-            //     'attributesForFaceting'=> ['filterOnly(email)'],
-            // ],
-        ],
+        'index-settings' => [],
     ],
 
     /*
@@ -140,9 +144,90 @@ return [
         'host' => env('MEILISEARCH_HOST', 'http://localhost:7700'),
         'key' => env('MEILISEARCH_KEY'),
         'index-settings' => [
-            // 'users' => [
-            //     'filterableAttributes'=> ['id', 'name', 'email'],
-            // ],
+            Video::class => [
+                'displayedAttributes' => [
+                    'id',
+                    'title',
+                    'slug',
+                    'thumbnail_url',
+                    'preview_url',
+                    'time',
+                    'views',
+                    'likes',
+                    'published_at',
+                    'draft',
+                    'is_published',
+                    'channel',
+                    'channel.id',
+                    'channel.name',
+                    'channel.slug',
+                    'channel.profile_picture_url',
+                    'channel.nationality_iso',
+                    'channel.aliases',
+                    'tags',
+                    'tags.id',
+                    'tags.name',
+                    'tags.slug',
+                ],
+                'searchableAttributes' => [
+                    'title',
+                    'channel.name',
+                    'channel.aliases',
+                    'tags.name',
+                ],
+                'filterableAttributes' => [
+                    'id',
+                    'draft',
+                    'is_published',
+                    'published_at',
+                    'channel.id',
+                    'channel.nationality_iso',
+                    'tags.id',
+                ],
+                'sortableAttributes' => [
+                    'id',
+                    'published_at',
+                    'views',
+                    'likes',
+                ],
+                'rankingRules' => [
+                    'words',
+                    'typo',
+                    'sort',
+                    'attribute',
+                    'proximity',
+                ],
+            ],
+            Channel::class => [
+                'displayedAttributes' => [
+                    'id',
+                    'name',
+                    'slug',
+                    'profile_picture_url',
+                    'card_picture_url',
+                    'nationality_iso',
+                    'aliases',
+                ],
+                'searchableAttributes' => [
+                    'name',
+                    'aliases',
+                ],
+                'filterableAttributes' => [
+                    'id',
+                    'nationality_iso',
+                ],
+                'sortableAttributes' => [
+                    'id',
+                    'name',
+                ],
+                'rankingRules' => [
+                    'words',
+                    'typo',
+                    'sort',
+                    'attribute',
+                    'proximity',
+                ],
+            ],
         ],
     ],
 
@@ -179,31 +264,7 @@ return [
             'num_retries' => env('TYPESENSE_NUM_RETRIES', 3),
             'retry_interval_seconds' => env('TYPESENSE_RETRY_INTERVAL_SECONDS', 1),
         ],
-        // 'max_total_results' => env('TYPESENSE_MAX_TOTAL_RESULTS', 1000),
-        'model-settings' => [
-            // User::class => [
-            //     'collection-schema' => [
-            //         'fields' => [
-            //             [
-            //                 'name' => 'id',
-            //                 'type' => 'string',
-            //             ],
-            //             [
-            //                 'name' => 'name',
-            //                 'type' => 'string',
-            //             ],
-            //             [
-            //                 'name' => 'created_at',
-            //                 'type' => 'int64',
-            //             ],
-            //         ],
-            //         'default_sorting_field' => 'created_at',
-            //     ],
-            //     'search-parameters' => [
-            //         'query_by' => 'name'
-            //     ],
-            // ],
-        ],
+        'model-settings' => [],
         'import_action' => env('TYPESENSE_IMPORT_ACTION', 'upsert'),
     ],
 
