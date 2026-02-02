@@ -1,6 +1,10 @@
 <header class="wrapper header-desktop">
     <a href="{{ route('home') }}" class="logo-header">
-        <span class="text-2xl font-bold text-white">{{ config('app.name') }}</span>
+        @if(theme('logo_url'))
+            <img src="{{ theme('logo_url') }}" alt="{{ theme('site_name', config('app.name')) }}" class="h-8">
+        @else
+            <span class="text-2xl font-bold text-white">{{ theme('site_name', config('app.name')) }}</span>
+        @endif
     </a>
 
     <nav itemscope itemtype="https://schema.org/SiteNavigationElement" class="ml-auto">

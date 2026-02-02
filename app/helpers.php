@@ -3,6 +3,19 @@
 use App\Helpers\TranslationHelper;
 use Illuminate\Support\Facades\Cache;
 
+if (! function_exists('theme')) {
+    /**
+     * Get theme setting value
+     *
+     * @param  string  $key  Theme key (e.g., 'site_name', 'primary_color')
+     * @param  mixed  $default  Default value if not set
+     */
+    function theme(string $key, mixed $default = null): mixed
+    {
+        return config("tentacle.theme.{$key}", $default);
+    }
+}
+
 if (! function_exists('t__')) {
     /**
      * Translate the given message from database

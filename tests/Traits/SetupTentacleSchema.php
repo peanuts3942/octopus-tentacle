@@ -8,19 +8,13 @@ use Illuminate\Support\Facades\Schema;
 /**
  * Creates the tentacle-related tables in the test database.
  *
- * Migrations live in btbf/, so this trait replicates
- * the schema for octopus-tentacle's isolated test suite.
+ * Only tables owned by octopus-tentacle are created here.
+ * Tables like videos, channels, tags belong to btbf/ and are not tested here.
  */
 trait SetupTentacleSchema
 {
     protected function setUpTentacleSchema(): void
     {
-        Schema::create('videos', function (Blueprint $table) {
-            $table->id();
-            $table->boolean('draft')->default(false);
-            $table->timestamps();
-        });
-
         Schema::create('tentacles', function (Blueprint $table) {
             $table->id();
             $table->string('name');
@@ -35,14 +29,6 @@ trait SetupTentacleSchema
             $table->string('description')->nullable();
             $table->boolean('is_active')->default(true);
             $table->timestamps();
-        });
-
-        Schema::create('tentacle_video', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('tentacle_id')->constrained()->onDelete('cascade');
-            $table->foreignId('video_id')->constrained()->onDelete('cascade');
-            $table->boolean('draft')->default(false);
-            $table->unique(['tentacle_id', 'video_id']);
         });
 
         Schema::create('octopus_users', function (Blueprint $table) {

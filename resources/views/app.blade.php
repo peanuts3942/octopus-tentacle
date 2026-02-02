@@ -46,7 +46,7 @@
             };
 
             // Fallback if empty
-            $title = $title ?: config('app.name');
+            $title = $title ?: theme('site_name', config('app.name'));
 
             // Description
             $description = match($routeName) {
@@ -91,12 +91,26 @@
                 background-color: #000000 !important;
             }
             :root {
-                --main-color: {{ config('tentacle.settings.main_color', '#E85D04') }};
+                --main-color: {{ theme('primary_color', '#E85D04') }};
+                --font-sans: '{{ theme('font_family') }}', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+            }
+            @layer utilities {
+                body,
+                html {
+                    --font-sans: '{{ theme('font_family') }}', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+                }
             }
         </style>
 
-        <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=rubik:400,500,600,700,800,900" rel="stylesheet" />
+        @if(theme('favicon_url'))
+            <link rel="icon" href="{{ theme('favicon_url') }}" type="image/x-icon">
+        @endif
+
+        @if(theme('font_url'))
+            <link rel="preconnect" href="https://fonts.googleapis.com">
+            <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+            <link href="{{ theme('font_url') }}" rel="stylesheet" />
+        @endif
 
         <title>{{ $title }}</title>
         <meta name="description" content="{{ $description }}">

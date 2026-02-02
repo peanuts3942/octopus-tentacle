@@ -22,7 +22,7 @@
             padding: 0;
             width: 100%;
             height: 100%;
-            font-family: 'Rubik', sans-serif;
+            font-family: '{{ theme('font_family') }}', sans-serif;
         }
         /* .player-container {
             position: relative;
