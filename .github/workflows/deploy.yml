@@ -12,7 +12,11 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     needs: test
-    environment: ${{ github.ref_name == 'main' && 'production' || 'staging' }}
+    strategy:
+      matrix:
+        include:
+          - environment: ${{ github.ref_name == 'main' && 'production-octopus-tentacle-1' || 'staging-staging-octopus-tentacle-1' }}
+    environment: ${{ matrix.environment }}
     steps:
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1.2.1
@@ -20,7 +24,6 @@ jobs:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
-          script_stop: true
           script: |
             cd ${{ vars.DEPLOY_PATH }}
 
