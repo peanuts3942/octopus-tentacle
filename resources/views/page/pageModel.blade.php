@@ -12,8 +12,8 @@
 
     <div class="head-title-container">
         <h1 class="head-title">{{ $channel->name }}</h1>
-        @if($channel->translations->isNotEmpty() && $channel->translations->first()->short_description)
-        <h2 class="head-title-sub">{{ str_replace('<description>', $channel->translations->first()->short_description, $textseo->model->h2) }}</h2>
+        @if($channel->short_description)
+        <h2 class="head-title-sub">{{ str_replace('<description>', $channel->short_description, $textseo->model->h2) }}</h2>
         @endif
     </div>
 

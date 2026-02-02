@@ -2,57 +2,35 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Channel;
-use App\Models\Video;
+use App\Services\ChannelServices;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redis;
 
 class ChannelController extends Controller
 {
-    private const DATA_TTL = 3600; // 1 hour
-
     private const VIEW_TTL = 300; // 5 minutes
+
+    public function __construct(
+        private ChannelServices $channelServices
+    ) {}
 
     public function index(Request $request)
     {
-        $page = $request->get('page', 1);
-        $isAjax = $request->ajax();
-
-        // View cache (only page 1, non-AJAX)
+        // View cache (non-AJAX only)
         $viewCacheKey = 'cache:view:page:pageModels';
-        if (! $isAjax && $page == 1) {
+        if (! $request->ajax()) {
             $cachedView = Redis::get($viewCacheKey);
             if ($cachedView) {
                 return response($cachedView);
             }
         }
 
-        // Data cache
-        $dataCacheKey = 'cache:data:allModels';
-        $cachedData = Redis::get($dataCacheKey);
+        // Get channels via service (Meilisearch + SQL fallback, with data cache)
+        $channels = $this->channelServices->getAllChannels();
 
-        if ($cachedData) {
-            $channels = unserialize($cachedData);
-        } else {
-            $tentacleId = config('app.tentacle_id');
-            $channels = Channel::query()
-                ->whereHas('videos', function ($q) use ($tentacleId) {
-                    $q->where('is_published', true)
-                        ->availableInZone()
-                        ->where(function ($query) use ($tentacleId) {
-                            $query->where(function ($inner) use ($tentacleId) {
-                                $inner->whereDoesntHave('tentacleVideos', fn ($tv) => $tv->where('tentacle_id', $tentacleId))
-                                    ->where('draft', '!=', true);
-                            })->orWhereHas('tentacleVideos', fn ($tv) => $tv
-                                ->where('tentacle_id', $tentacleId)
-                                ->where('draft', '!=', true)
-                            );
-                        });
-                })
-                ->orderBy('name')
-                ->get();
-
-            Redis::setex($dataCacheKey, self::DATA_TTL, serialize($channels));
+        // For AJAX requests, return JSON directly
+        if ($request->ajax()) {
+            return response()->json($channels);
         }
 
         $view = view('page.pageModels', [
@@ -61,9 +39,7 @@ class ChannelController extends Controller
             'h2' => 'Browse videos by model',
         ])->render();
 
-        if (! $isAjax && $page == 1) {
-            Redis::setex($viewCacheKey, self::VIEW_TTL, $view);
-        }
+        Redis::setex($viewCacheKey, self::VIEW_TTL, $view);
 
         return response($view);
     }
@@ -82,44 +58,22 @@ class ChannelController extends Controller
             }
         }
 
-        // Data cache for channel
-        $channelCacheKey = "cache:data:model:{$slug}";
-        $cachedChannel = Redis::get($channelCacheKey);
-
-        if ($cachedChannel) {
-            $channel = unserialize($cachedChannel);
-        } else {
-            $channel = Channel::with('translations')->where('slug', $slug)->first();
-
-            if (! $channel) {
-                abort(404);
-            }
-
-            Redis::setex($channelCacheKey, self::DATA_TTL, serialize($channel));
-        }
+        // Get channel via service (with data cache)
+        $channel = $this->channelServices->getChannel($slug);
 
         if (! $channel) {
             abort(404);
         }
 
-        // Data cache for videos
-        $videosCacheKey = "cache:data:model:{$channel->id}:videos:page:{$page}";
-        $cachedVideos = Redis::get($videosCacheKey);
+        // Get channel videos via service (Meilisearch + SQL fallback, with data cache)
+        $videos = $this->channelServices->getChannelVideos($channel->id, $page, $request);
 
-        if ($cachedVideos) {
-            $videos = unserialize($cachedVideos);
-        } else {
-            $videos = Video::query()
-                ->select('videos.*')
-                ->where('videos.channel_id', $channel->id)
-                ->where('videos.is_published', true)
-                ->notDraftForTentacle()
-                ->availableInZone()
-                ->with(['channel:id,name,slug,profile_picture_url', 'translation'])
-                ->orderBy('videos.published_at', 'desc')
-                ->paginate(24);
-
-            Redis::setex($videosCacheKey, self::DATA_TTL, serialize($videos));
+        // For AJAX requests, return JSON directly
+        if ($isAjax) {
+            return response()->json([
+                'channel' => $channel,
+                'videos' => $videos,
+            ]);
         }
 
         $view = view('page.pageModel', [
@@ -127,7 +81,7 @@ class ChannelController extends Controller
             'videos' => $videos,
         ])->render();
 
-        if (! $isAjax && $page == 1) {
+        if ($page == 1) {
             Redis::setex($viewCacheKey, self::VIEW_TTL, $view);
         }
 

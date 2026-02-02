@@ -2,58 +2,35 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Tag;
-use App\Models\Video;
+use App\Services\TagServices;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redis;
 
 class TagController extends Controller
 {
-    private const DATA_TTL = 3600; // 1 hour
-
     private const VIEW_TTL = 300; // 5 minutes
+
+    public function __construct(
+        private TagServices $tagServices
+    ) {}
 
     public function index(Request $request)
     {
-        $page = $request->get('page', 1);
-        $isAjax = $request->ajax();
-
-        // View cache (only page 1, non-AJAX)
+        // View cache (non-AJAX only)
         $viewCacheKey = 'cache:view:page:pageCategories';
-        if (! $isAjax && $page == 1) {
+        if (! $request->ajax()) {
             $cachedView = Redis::get($viewCacheKey);
             if ($cachedView) {
                 return response($cachedView);
             }
         }
 
-        // Data cache
-        $dataCacheKey = 'cache:data:allCategories';
-        $cachedData = Redis::get($dataCacheKey);
+        // Get tags via service (Meilisearch + SQL fallback, with data cache)
+        $categories = $this->tagServices->getAllTags();
 
-        if ($cachedData) {
-            $categories = unserialize($cachedData);
-        } else {
-            $tentacleId = config('app.tentacle_id');
-            $categories = Tag::query()
-                ->whereHas('videos', function ($q) use ($tentacleId) {
-                    $q->where('is_published', true)
-                        ->availableInZone()
-                        ->where(function ($query) use ($tentacleId) {
-                            $query->where(function ($inner) use ($tentacleId) {
-                                $inner->whereDoesntHave('tentacleVideos', fn ($tv) => $tv->where('tentacle_id', $tentacleId))
-                                    ->where('draft', '!=', true);
-                            })->orWhereHas('tentacleVideos', fn ($tv) => $tv
-                                ->where('tentacle_id', $tentacleId)
-                                ->where('draft', '!=', true)
-                            );
-                        });
-                })
-                ->with('translation')
-                ->get()
-                ->sortBy('name');
-
-            Redis::setex($dataCacheKey, self::DATA_TTL, serialize($categories));
+        // For AJAX requests, return JSON directly
+        if ($request->ajax()) {
+            return response()->json($categories);
         }
 
         $view = view('page.pageCategories', [
@@ -62,9 +39,7 @@ class TagController extends Controller
             'h2' => 'Browse videos by category',
         ])->render();
 
-        if (! $isAjax && $page == 1) {
-            Redis::setex($viewCacheKey, self::VIEW_TTL, $view);
-        }
+        Redis::setex($viewCacheKey, self::VIEW_TTL, $view);
 
         return response($view);
     }
@@ -83,46 +58,22 @@ class TagController extends Controller
             }
         }
 
-        // Data cache for category
-        $categoryCacheKey = "cache:data:category:{$slug}";
-        $cachedCategory = Redis::get($categoryCacheKey);
-
-        if ($cachedCategory) {
-            $category = unserialize($cachedCategory);
-        } else {
-            $category = Tag::with('translation')
-                ->whereHas('translation', fn ($q) => $q->where('slug', $slug))
-                ->first();
-
-            if (! $category) {
-                abort(404);
-            }
-
-            Redis::setex($categoryCacheKey, self::DATA_TTL, serialize($category));
-        }
+        // Get tag via service (with data cache)
+        $category = $this->tagServices->getTag($slug);
 
         if (! $category) {
             abort(404);
         }
 
-        // Data cache for videos
-        $videosCacheKey = "cache:data:category:{$category->id}:videos:page:{$page}";
-        $cachedVideos = Redis::get($videosCacheKey);
+        // Get tag videos via service (Meilisearch + SQL fallback, with data cache)
+        $videos = $this->tagServices->getTagVideos($category->id, $page, $request);
 
-        if ($cachedVideos) {
-            $videos = unserialize($cachedVideos);
-        } else {
-            $videos = Video::query()
-                ->select('videos.*')
-                ->whereHas('tags', fn ($q) => $q->where('tags.id', $category->id))
-                ->where('videos.is_published', true)
-                ->notDraftForTentacle()
-                ->availableInZone()
-                ->with(['channel:id,name,slug,profile_picture_url', 'translation'])
-                ->orderBy('videos.published_at', 'desc')
-                ->paginate(24);
-
-            Redis::setex($videosCacheKey, self::DATA_TTL, serialize($videos));
+        // For AJAX requests, return JSON directly
+        if ($isAjax) {
+            return response()->json([
+                'category' => $category,
+                'videos' => $videos,
+            ]);
         }
 
         $view = view('page.pageCategory', [
@@ -130,7 +81,7 @@ class TagController extends Controller
             'videos' => $videos,
         ])->render();
 
-        if (! $isAjax && $page == 1) {
+        if ($page == 1) {
             Redis::setex($viewCacheKey, self::VIEW_TTL, $view);
         }
 

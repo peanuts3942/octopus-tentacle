@@ -1,3 +1,14 @@
+@php
+    $basePath = $basePath ?? null;
+    // Helper function to generate URL based on basePath or paginator
+    $getPageUrl = function($pageNum) use ($paginator, $basePath) {
+        if ($basePath) {
+            return $basePath . '/' . $pageNum;
+        }
+        return $paginator->url($pageNum);
+    };
+@endphp
+
 @if ($paginator->hasPages())
 <nav class="pagination" role="navigation" aria-label="Pagination">
 
@@ -10,7 +21,7 @@
                 </svg>
             </span>
         @else
-            <a href="{{ $paginator->previousPageUrl() }}" class="pagination-button" rel="prev">
+            <a href="{{ $getPageUrl($paginator->currentPage() - 1) }}" class="pagination-button" rel="prev">
                 <svg class="pagination-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="15 18 9 12 15 6"></polyline>
                 </svg>
@@ -29,7 +40,7 @@
 
             {{-- Première page --}}
             @if ($start > 1)
-                <a href="{{ $paginator->url(1) }}" class="pagination-number-button">1</a>
+                <a href="{{ $getPageUrl(1) }}" class="pagination-number-button">1</a>
                 @if ($start > 2)
                     <span class="pagination-dots">...</span>
                 @endif
@@ -40,7 +51,7 @@
                 @if ($page == $paginator->currentPage())
                     <span class="pagination-number-button pagination-number-button--active" aria-current="page">{{ $page }}</span>
                 @else
-                    <a href="{{ $paginator->url($page) }}" class="pagination-number-button">{{ $page }}</a>
+                    <a href="{{ $getPageUrl($page) }}" class="pagination-number-button">{{ $page }}</a>
                 @endif
             @endfor
 
@@ -49,13 +60,13 @@
                 @if ($end < $paginator->lastPage() - 1)
                     <span class="pagination-dots">...</span>
                 @endif
-                <a href="{{ $paginator->url($paginator->lastPage()) }}" class="pagination-number-button">{{ $paginator->lastPage() }}</a>
+                <a href="{{ $getPageUrl($paginator->lastPage()) }}" class="pagination-number-button">{{ $paginator->lastPage() }}</a>
             @endif
         </div>
 
         {{-- Bouton Suivant --}}
         @if ($paginator->hasMorePages())
-            <a href="{{ $paginator->nextPageUrl() }}" class="pagination-button" rel="next">
+            <a href="{{ $getPageUrl($paginator->currentPage() + 1) }}" class="pagination-button" rel="next">
                 <svg class="pagination-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="9 18 15 12 9 6"></polyline>
                 </svg>

@@ -10,8 +10,6 @@ import './sticky-header.js';
 import './player-ad-overlay.js';
 import './ads.js';
 
-import { initSearch } from './search';
-
 // const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
 // createInertiaApp({
@@ -226,28 +224,26 @@ function initVideoPreview() {
     });
 }
 
-// Fonction pour calculer le temps écoulé
+// Fonction pour calculer le temps écoulé (avec traductions)
 function timeAgo(timestamp: number): string {
     const date = new Date(timestamp * 1000);
     const now = new Date();
 
     const diffInMs = now.getTime() - date.getTime();
-    const seconds = Math.floor(diffInMs / 1000);
-    const minutes = Math.floor(seconds / 60);
-    const hours = Math.floor(minutes / 60);
-    const days = Math.floor(hours / 24);
-    const weeks = Math.floor(days / 7);
-    const months = Math.floor(days / 30);
-    const years = Math.floor(days / 365);
+    const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+    const diffInWeeks = Math.floor(diffInDays / 7);
+    const diffInMonths = Math.floor(diffInDays / 30);
+    const diffInYears = Math.floor(diffInDays / 365);
 
-    // Retourner le format le plus approprié
-    if (years > 0) return years === 1 ? '1 year ago' : `${years} years ago`;
-    if (months > 0) return months === 1 ? '1 month ago' : `${months} months ago`;
-    if (weeks > 0) return weeks === 1 ? '1 week ago' : `${weeks} weeks ago`;
-    if (days > 0) return days === 1 ? '1 day ago' : `${days} days ago`;
-    if (hours > 0) return hours === 1 ? '1 hour ago' : `${hours} hours ago`;
-    if (minutes > 0) return minutes === 1 ? '1 minute ago' : `${minutes} minutes ago`;
-    return 'Just now';
+    // Fonction de traduction (window.t défini dans js-translations.blade.php)
+    const t = (window as any).t || ((key: string) => key);
+
+    if (diffInDays < 1) return t('time.today');
+    if (diffInDays < 2) return t('time.yesterday');
+    if (diffInDays < 7) return t(diffInDays === 1 ? 'time.day_ago' : 'time.days_ago').replace('{count}', String(diffInDays));
+    if (diffInWeeks < 4) return t(diffInWeeks === 1 ? 'time.week_ago' : 'time.weeks_ago').replace('{count}', String(diffInWeeks));
+    if (diffInMonths < 12) return t(diffInMonths === 1 ? 'time.month_ago' : 'time.months_ago').replace('{count}', String(diffInMonths));
+    return t(diffInYears === 1 ? 'time.year_ago' : 'time.years_ago').replace('{count}', String(diffInYears));
 }
 
 // Fonction pour formater la durée
@@ -296,10 +292,11 @@ function formatElements(element = document.body) {
                     htmlElement.classList.add('date-new');
                     const infosDiv = htmlElement.closest('.cardVideo')?.querySelector('.cardVideo-image-container');
                     if (infosDiv && !infosDiv.querySelector('.cardVideo-badge')) {
+                        const t = (window as any).t || ((key: string) => key);
                         const newBadge = document.createElement('a');
                         newBadge.href = '#';
                         newBadge.className = 'cardVideo-badge';
-                        newBadge.textContent = 'New';
+                        newBadge.textContent = t('time.new');
                         infosDiv.insertBefore(newBadge, infosDiv.firstChild);
                     }
                 }
@@ -397,7 +394,6 @@ function initMenu() {
 document.addEventListener('DOMContentLoaded', async () => {
     initVideoPreview();
     formatElements();
-    initSearch();
     setActiveButton();
     initMenu();
 });

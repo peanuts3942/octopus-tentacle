@@ -106,7 +106,6 @@ class Video extends Model
             ->where('videos.is_published', true)
             ->notDraftForTentacle()
             ->whereJsonContains('videos.available_zones', $zone)
-            ->whereHas('translations', fn ($q) => $q->where('locale', $zone))
             ->whereHas('channel', fn ($q) => $q->whereIn('nationality_iso', $nationalities));
     }
 
@@ -226,13 +225,8 @@ class Video extends Model
             return false;
         }
 
-        // Must be available in current zone
+        // Must be available in current zone (implies translation exists)
         if (! $this->isAvailableInZone($zone)) {
-            return false;
-        }
-
-        // Must have a translation for current zone
-        if (! $this->translations()->where('locale', $zone)->exists()) {
             return false;
         }
 

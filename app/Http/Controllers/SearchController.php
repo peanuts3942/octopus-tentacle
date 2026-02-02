@@ -2,74 +2,74 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Channel;
-use App\Models\Tag;
-use App\Models\Video;
+use App\Services\SearchServices;
+use App\Services\VideoServices;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class SearchController extends Controller
 {
+    public function __construct(
+        private SearchServices $searchServices,
+        private VideoServices $videoServices
+    ) {}
+
     public function index(Request $request)
     {
         $query = trim($request->get('q', ''));
+        $page = $request->get('page', 1);
+        $tentacleId = config('app.tentacle_id');
 
         if (empty($query)) {
             return view('page.pageSearch', [
                 'query' => '',
-                'videos' => collect(),
-                'channels' => collect(),
-                'tags' => collect(),
-                'allVideos' => collect(),
+                'videos' => new LengthAwarePaginator([], 0, 24),
+                'channels' => [],
+                'tags' => [],
                 'totalVideos' => 0,
-                'totalChannels' => 0,
-                'totalTags' => 0,
+                'hasNoResults' => false,
+                'feedVideos' => null,
             ]);
         }
 
-        // Search videos via translations
-        $videos = Video::query()
-            ->select('videos.*')
-            ->whereHas('translation', fn ($q) => $q->where('title', 'LIKE', "%{$query}%"))
-            ->where('videos.is_published', true)
-            ->notDraftForTentacle()
-            ->availableInZone()
-            ->with(['channel:id,name,slug,profile_picture_url', 'translation'])
-            ->orderBy('videos.published_at', 'desc')
-            ->limit(12)
-            ->get();
+        // Search via service (Meilisearch + SQL fallback)
+        $results = $this->searchServices->search($query, $page);
 
-        // Search channels
-        $channels = Channel::where('name', 'LIKE', "%{$query}%")
-            ->limit(4)
-            ->get();
+        // Create paginator for videos
+        $videosPaginator = new LengthAwarePaginator(
+            $results['videos'],
+            $results['totalVideos'],
+            $results['perPage'],
+            $results['currentPage'],
+            ['path' => $request->url(), 'query' => $request->query()]
+        );
 
-        // Search tags via translations
-        $tags = Tag::whereHas('translation', fn ($q) => $q->where('name', 'LIKE', "%{$query}%"))
-            ->with('translation')
-            ->limit(4)
-            ->get();
+        // If no video results, get feed videos for "More videos" section
+        $feedVideos = null;
+        $hasNoResults = $results['totalVideos'] === 0;
 
-        // All videos paginated for full results
-        $allVideos = Video::query()
-            ->select('videos.*')
-            ->whereHas('translation', fn ($q) => $q->where('title', 'LIKE', "%{$query}%"))
-            ->where('videos.is_published', true)
-            ->notDraftForTentacle()
-            ->availableInZone()
-            ->with(['channel:id,name,slug,profile_picture_url', 'translation'])
-            ->orderBy('videos.published_at', 'desc')
-            ->paginate(24)
-            ->appends(['q' => $query]);
+        if ($hasNoResults) {
+            $feedVideos = $this->videoServices->getFeedVideos($tentacleId, 1, $request);
+            // Recreate paginator with home page path (no query params)
+            if ($feedVideos instanceof LengthAwarePaginator) {
+                $feedVideos = new LengthAwarePaginator(
+                    $feedVideos->items(),
+                    $feedVideos->total(),
+                    $feedVideos->perPage(),
+                    $feedVideos->currentPage(),
+                    ['path' => '/page']
+                );
+            }
+        }
 
         return view('page.pageSearch', [
             'query' => $query,
-            'videos' => $videos,
-            'channels' => $channels,
-            'tags' => $tags,
-            'allVideos' => $allVideos,
-            'totalVideos' => $allVideos->total(),
-            'totalChannels' => $channels->count(),
-            'totalTags' => $tags->count(),
+            'videos' => $videosPaginator,
+            'channels' => $results['channels'],
+            'tags' => $results['tags'],
+            'totalVideos' => $results['totalVideos'],
+            'hasNoResults' => $hasNoResults,
+            'feedVideos' => $feedVideos,
         ]);
     }
 }
