@@ -23,4 +23,16 @@ return [
         'font_url' => 'https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap',
         'font_family' => 'Montserrat',
     ],
+
+    'popup' => [
+        'settings' => [
+            'external_popup_scripts_count' => 0,
+            'random' => false,
+        ],
+        'items' => [],
+    ],
+
+    'preroll' => [
+        'items' => [],
+    ],
 ];

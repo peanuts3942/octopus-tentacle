@@ -1,12 +1,9 @@
-<!-- data-vast-url="https://a.adtng.com/get/10016243" -->
-<player-ad-overlay 
-    data-vast-url="https://a.adtng.com/get/10016243"
-    data-max-popups="0"
+@if(!empty($items))
+<player-ad-overlay
+    data-items="{{ json_encode($items, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) }}"
     data-initial-delay="1000"
-    data-popup-initial-delay="1"
-    data-delay-between-popups="1"
-    data-random="false"
-    data-popup-urls='[]'
+    data-is-premium="{{ $isPremium }}"
+    data-app-url="{{ config('app.url') }}"
 >
     <div class="player-container container-overlay" style="position: relative;">
         {{ $slot }}
@@ -24,18 +21,6 @@
             height: 100%;
             font-family: '{{ theme('font_family') }}', sans-serif;
         }
-        /* .player-container {
-            position: relative;
-            aspect-ratio: 16/9 !important;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background-color: #000;
-            overflow: hidden;
-        } */
-        /* Style VAST Player */
         .vast-container {
             position: absolute;
             top: 0;
@@ -61,18 +46,22 @@
           color: white;
           border: none;
           padding: 10px 16px;
-          z-index: 10;
+          z-index: 30;
           border-radius: 100px;
           font-size: 12px;
           font-weight: 900;
-          display: flex;           /* ← tjs visible */
+          display: flex;
           align-items: center;
           gap: 6px;
+          cursor: pointer;
         }
         .vast-skip-btn[disabled],
         .vast-skip-btn.is-disabled {
           opacity: .6;
-          pointer-events: none;    /* évite les clics fantômes */
+          pointer-events: none;
+        }
+        #svg-skip {
+            transform: translateY(1px);
         }
         .vast-timer {
             position: absolute;
@@ -83,7 +72,8 @@
             font-size: 14px;
             font-weight: 800;
             text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
-            z-index: 10;
+            z-index: 26;
+            pointer-events: none;
         }
         .vast-progress-bar {
             position: absolute;
@@ -92,7 +82,8 @@
             height: 5px;
             background-color: #E85D04;
             width: 0%;
-            z-index: 15;
+            z-index: 27;
+            pointer-events: none;
         }
         .vast-click-overlay {
             position: absolute;
@@ -100,16 +91,14 @@
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: 5;
+            z-index: 25;
             display: none;
+            cursor: pointer;
         }
         .vast-hidden{ opacity:0; pointer-events:none; }
-
-        /* On masque aussi le texte debug interne */
         .vjs-tech:before {
-        content: "" !important;
+            content: "" !important;
         }
-          /* Spinner au centre du conteneur VAST */
         .vast-spinner {
             position: absolute;
             inset: 0;
@@ -126,32 +115,26 @@
             animation: spin 0.8s linear infinite;
         }
         @keyframes spin { to { transform: rotate(360deg); } }
-
-        /* Timer/Progress cachés par défaut */
         .vast-timer, .vast-progress-bar { display: none; }
     </style>
 
     <script src="https://vjs.zencdn.net/7.20.3/video.min.js"></script>
     <script>
-    // --- Hub global: une seule capture de geste pour toutes les instances ---
     (function initGlobalGestureHub(){
       if (window.__PAO_HUB__) return;
       const instances = new Set();
       let interacted = false;
 
-      // on notifie toutes les instances
       function notifyAll(){
         interacted = true;
         for (const inst of instances) { try { inst.__onFirstUserGesture(); } catch(e){} }
       }
 
-      // capture "synchrone" sur un maximum d'événements (mobile + desktop)
       const ctl = new AbortController();
       const sig = ctl.signal;
       ['pointerdown','mousedown','touchstart','touchend','wheel','scroll','keydown']
         .forEach(ev => window.addEventListener(ev, () => {
           if (!interacted) notifyAll();
-          // on n'aborte PAS: d'autres pages/iframes peuvent en avoir besoin
         }, { passive:true, signal:sig }));
 
       window.__PAO_HUB__ = {
@@ -161,53 +144,50 @@
       };
     })();
 
-    // ---------------- Composant ----------------
     class PlayerAdOverlay extends HTMLElement {
       connectedCallback() {
+        if (this.dataset.isPremium) return;
 
-        // --- config
-        this.vastUrl = this.dataset.vastUrl;
-        this.maxPopups = parseInt(this.dataset.maxPopups || "0", 10);
-        this.initialDelay = parseInt(this.dataset.initialDelay || "0", 10);
-        this.delayBetweenPopups = parseInt(this.dataset.delayBetweenPopups || "0", 10);
-        this.popupInitialDelay = parseInt(this.dataset.popupInitialDelay || "0", 10);
-        this.random = this.dataset.random === "true";
-        this.popupUrls = JSON.parse(this.dataset.popupUrls || "[]");
-        if (this.random) this.popupUrls.sort(() => Math.random() - 0.5);
+        try {
+          this.items = JSON.parse(this.dataset.items || '[]');
+        } catch(e) {
+          this.items = [];
+        }
+        if (!this.items.length) return;
+
+        this.selectedItem = this.items[Math.floor(Math.random() * this.items.length)];
+        this.appUrl = this.dataset.appUrl || '';
+        const href = this.selectedItem.href || '';
+        this.vastUrl = href.startsWith('/') ? this.appUrl + href : href;
+        this.skipDelay = parseInt(this.selectedItem.skip_delay || "10", 10);
+        this.initialDelay = parseInt(this.dataset.initialDelay || "1000", 10);
         this.container = this.querySelector('.container-overlay');
 
-        // état
         this.vjsPlayer = null;
-        this._wantUnmute = window.__PAO_HUB__.hasInteracted(); // si déjà interagi avant le composant
+        this._wantUnmute = window.__PAO_HUB__.hasInteracted();
         window.__PAO_HUB__.register(this);
 
-        // préfetch non bloquant
         this.prefetched = null;
         this.prefetchVAST(this.vastUrl, 10000).catch(()=>{});
 
-        // lance VAST
-        setTimeout(() => this.launchVASTThenPopups(), this.initialDelay);
+        setTimeout(() => this.launchVAST(), this.initialDelay);
       }
 
       disconnectedCallback(){
         try { window.__PAO_HUB__.unregister(this); } catch(e){}
       }
 
-      // appelé par le hub au 1er geste utilisateur
       __onFirstUserGesture(){
         this._wantUnmute = true;
-        // si le player est déjà là → démuter synchrone
         if (this.vjsPlayer) this.__attemptUnmuteNow(this.vjsPlayer);
       }
 
       __attemptUnmuteNow(player){
         try {
-          // IMPORTANT: faire ces appels dans le handler du geste (ou synchronement après)
           player.muted(false);
           player.volume(1);
           const p = player.play();
           if (p && p.catch) p.catch(() => {
-            // si refus (rare après geste), on revient en muted et on garde la lecture
             player.muted(true);
             player.play();
           });
@@ -260,9 +240,8 @@
         } finally { clearTimeout(t); }
       }
 
-      async launchVASTThenPopups() {
+      async launchVAST() {
         await this.launchVASTWithWatchdogs();
-        this.startPopupsFlow();
       }
 
       fireTracking(urls, label) {
@@ -280,7 +259,7 @@
           vast.innerHTML = `
             <video id="vast-video" class="video-js vjs-default-skin" autoplay muted playsinline webkit-playsinline></video>
             <div class="vast-spinner" id="vast-spinner"></div>
-            <div id="vast-timer" class="vast-timer">Advertising • 0:00</div>
+            <div id="vast-timer" class="vast-timer">Advertising &bull; 0:00</div>
             <button id="vast-skip-btn" class="vast-skip-btn">
               <span>SKIP ADS</span>
               <div id="svg-skip" class="svg-hidden">
@@ -297,7 +276,7 @@
             controls:false, autoplay:true, muted:true, preload:'auto',
             userActions:{ doubleClick:false }, nativeControlsForTouch:false
           });
-          this.vjsPlayer = player; // <- on garde une référence
+          this.vjsPlayer = player;
 
           const spinner = vast.querySelector('#vast-spinner');
           const skipBtn = vast.querySelector('#vast-skip-btn');
@@ -310,7 +289,8 @@
           if (!data) { try { data = await this.prefetchVAST(this.vastUrl, 10000); } catch(e){} }
           if (!data || !data.mediaFile) { vast.remove(); return resolve('prefetch-fail'); }
 
-          let { mediaFile, clickThroughURL, impressionUrls, clickTrackingUrls, trackingEvents, skipOffsetSec } = data;
+          let { mediaFile, clickThroughURL, impressionUrls, clickTrackingUrls, trackingEvents } = data;
+          const skipOffsetSec = this.skipDelay;
           player.src({ src: mediaFile, type:'video/mp4' });
 
           let started = false, freezeTimer = null, resolved = false;
@@ -340,8 +320,6 @@
             }, 500);
           };
 
-          // --- 🔊 clé: si l'utilisateur a déjà interagi AVANT que le player n'existe,
-          // on démutera dès que possible (premier play/timeupdate).
           const tryDeferredUnmute = () => {
             if (this._wantUnmute && player) this.__attemptUnmuteNow(player);
           };
@@ -355,7 +333,6 @@
               spinner.style.display = 'none';
               skipBtn.style.display = 'flex';
 
-              // UI secondaires
               if (skipOffsetSec != null) { showCountdownUI(); skipBtn.disabled = true; skipBtn.classList.add('is-disabled'); }
               clickOverlay.style.display = clickThroughURL ? 'block' : 'none';
 
@@ -365,12 +342,10 @@
               this.startProgressLoop(player, timer, progressBar, trackingEvents, skipBtn, skipOffsetSec);
               startFreezeWatch();
 
-              // si geste déjà fait, on unmute maintenant
               tryDeferredUnmute();
             }
           });
 
-          // bonus: si l'onglet revient en focus et qu'on veut du son, on retente
           document.addEventListener('visibilitychange', () => {
             if (!document.hidden) tryDeferredUnmute();
           });
@@ -397,21 +372,25 @@
       startProgressLoop(player, timer, progressBar, trackingEvents, skipBtn, skipOffsetSec) {
         let rafId = null;
         let q = { q1:false, q2:false, q3:false };
+        const startTime = performance.now();
+
         const loop = () => {
           const ct = player.currentTime();
           const dur = player.duration() || 0.001;
+          const wallClockElapsed = (performance.now() - startTime) / 1000;
+          const effectiveTime = Math.max(ct, wallClockElapsed);
 
           if (skipOffsetSec != null) {
-            const remaining = Math.max(0, Math.ceil(skipOffsetSec - ct));
+            const remaining = Math.max(0, Math.ceil(skipOffsetSec - effectiveTime));
             if (remaining > 0) {
               if (!skipBtn.disabled) { skipBtn.disabled = true; skipBtn.classList.add('is-disabled'); }
               skipBtn.querySelector('span').textContent = `Skip in ${remaining}`;
-              timer.textContent = `Advertising • 0:${String(remaining).padStart(2,'0')}`;
-              progressBar.style.width = `${Math.min((ct/skipOffsetSec)*100,100)}%`;
+              timer.textContent = `Advertising \u2022 0:${String(remaining).padStart(2,'0')}`;
+              progressBar.style.width = `${Math.min((effectiveTime/skipOffsetSec)*100,100)}%`;
             } else {
-              if (skipBtn.disabled) { skipBtn.disabled = false; skipBtn.classList.remove('is-disabled'); }
+              if (skipBtn.disabled) { skipBtn.disabled = false; skipBtn.classList.remove('is-disabled'); skipBtn.classList.add('vast_skip_btn_active') }
               skipBtn.querySelector('span').textContent = 'SKIP ADS';
-              timer.textContent = `Advertising • 0:00`;
+              timer.textContent = `Advertising \u2022 0:00`;
               progressBar.style.width = '100%';
             }
           }
@@ -424,39 +403,13 @@
         };
         rafId = requestAnimationFrame(loop);
       }
-
-      // ----- Popups après la VAST -----
-      startPopupsFlow() {
-        const container = this.container;
-        if (!container || this.maxPopups <= 0 || this.popupUrls.length === 0) return;
-        let popupCount = 0;
-
-        const createOverlay = () => {
-          const overlay = document.createElement('div');
-          Object.assign(overlay.style, {
-            position:'absolute', top:0, left:0, width:'100%', height:'100%',
-            zIndex:50, opacity:0
-          });
-          overlay.addEventListener('click', (e) => {
-            e.preventDefault();
-            if (popupCount < this.maxPopups) {
-              const url = this.popupUrls[popupCount % this.popupUrls.length];
-              window.open(url, '_blank');
-              popupCount++;
-              container.removeChild(overlay);
-              if (popupCount < this.maxPopups) {
-                setTimeout(createOverlay, this.delayBetweenPopups);
-              }
-            }
-          });
-          container.appendChild(overlay);
-        };
-
-        setTimeout(createOverlay, this.popupInitialDelay);
-        setTimeout(createOverlay, this.delayBetweenPopups || 0);
-      }
     }
     customElements.define('player-ad-overlay', PlayerAdOverlay);
     </script>
 
 </player-ad-overlay>
+@else
+<div class="player-container container-overlay" style="position: relative;">
+    {{ $slot }}
+</div>
+@endif

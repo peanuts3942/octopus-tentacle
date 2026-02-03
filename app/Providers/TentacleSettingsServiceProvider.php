@@ -22,6 +22,8 @@ class TentacleSettingsServiceProvider extends ServiceProvider
         }
 
         $this->loadThemeSettings($tentacleId);
+        $this->loadPopupSettings($tentacleId);
+        $this->loadPrerollSettings($tentacleId);
     }
 
     protected function loadThemeSettings(int $tentacleId): void
@@ -54,5 +56,51 @@ class TentacleSettingsServiceProvider extends ServiceProvider
         config(['tentacle.theme' => $theme]);
 
         View::share('theme', (object) $theme);
+    }
+
+    protected function loadPopupSettings(int $tentacleId): void
+    {
+        try {
+            $zone = config('app.zone', 'all');
+            $filtered = TentacleSetting::getCachedSettingWithZoneFilter($tentacleId, 'popup', $zone);
+        } catch (\Exception $e) {
+            return;
+        }
+
+        if (! $filtered) {
+            return;
+        }
+
+        $settings = $filtered['options']['settings'] ?? config('tentacle.popup.settings');
+        $items = $filtered['options']['items'] ?? [];
+
+        usort($items, fn ($a, $b) => ($a['spot'] ?? 999) <=> ($b['spot'] ?? 999));
+
+        config(['tentacle.popup' => [
+            'settings' => $settings,
+            'items' => $items,
+        ]]);
+    }
+
+    protected function loadPrerollSettings(int $tentacleId): void
+    {
+        try {
+            $zone = config('app.zone', 'all');
+            $filtered = TentacleSetting::getCachedSettingWithZoneFilter($tentacleId, 'preroll', $zone);
+        } catch (\Exception $e) {
+            return;
+        }
+
+        if (! $filtered) {
+            return;
+        }
+
+        $items = $filtered['options']['items'] ?? [];
+
+        usort($items, fn ($a, $b) => ($a['spot'] ?? 999) <=> ($b['spot'] ?? 999));
+
+        config(['tentacle.preroll' => [
+            'items' => $items,
+        ]]);
     }
 }

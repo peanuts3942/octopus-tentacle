@@ -16,6 +16,29 @@ if (! function_exists('theme')) {
     }
 }
 
+if (! function_exists('popup_config')) {
+    /**
+     * Get popup configuration (settings + items)
+     */
+    function popup_config(): array
+    {
+        return config('tentacle.popup', [
+            'settings' => ['external_popup_scripts_count' => 0, 'random' => false],
+            'items' => [],
+        ]);
+    }
+}
+
+if (! function_exists('preroll_items')) {
+    /**
+     * Get active preroll items
+     */
+    function preroll_items(): array
+    {
+        return config('tentacle.preroll.items', []);
+    }
+}
+
 if (! function_exists('t__')) {
     /**
      * Translate the given message from database

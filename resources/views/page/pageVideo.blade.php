@@ -23,22 +23,27 @@
 
     <div class="player-wrapper">
         <img class="background-video-player" src="{{ $video->thumbnail_url }}"/>
-        <div class="player-container">
-            @if($video->player_url)
+        <x-player-ad-overlay :isPremium="false">
+            @if($video->player_bunny_url || $video->player_voe_url || $video->player_babastream_url)
                 <iframe
-                    src="{{ $video->player_url }}"
-                    class="video-player-iframe"
-                    allowfullscreen
+                    src="{{ route('video.player', ['id' => $video->id]) }}"
+                    class="active-video-player"
+                    title="{{ $video->title }}"
                     frameborder="0"
-                    scrolling="no"
-                    allow="autoplay; encrypted-media"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    referrerpolicy="strict-origin-when-cross-origin"
+                    allowfullscreen
+                    loading="lazy"
+                    width="100%"
+                    height="100%"
+                    style="aspect-ratio: 16/9;"
                 ></iframe>
             @else
                 <div class="player-broken-container">
                     <p class="player-broken-text">{{ t__('common.player_unavailable') }}</p>
                 </div>
             @endif
-        </div>
+        </x-player-ad-overlay>
     </div>
 
     <div class="wrapper">

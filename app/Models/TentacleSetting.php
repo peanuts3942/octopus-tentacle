@@ -97,19 +97,38 @@ class TentacleSetting extends Model
     public static function filterItemsByZoneAndDraft(array $options, string $zone): array
     {
         if (isset($options['items']) && is_array($options['items'])) {
-            $options['items'] = array_filter($options['items'], function ($item) use ($zone) {
+            $validItems = array_filter($options['items'], function ($item) {
                 if (isset($item['draft']) && $item['draft']) {
                     return false;
                 }
 
-                if (isset($item['zone']) && ! empty($item['zone'])) {
-                    return $item['zone'] === $zone || $item['zone'] === 'common';
+                if (isset($item['isScheduledStart']) && $item['isScheduledStart'] && ! empty($item['scheduledStartTime'])) {
+                    if (\Carbon\Carbon::parse($item['scheduledStartTime'])->isFuture()) {
+                        return false;
+                    }
+                }
+
+                if (isset($item['isScheduledEnd']) && $item['isScheduledEnd'] && ! empty($item['scheduledEndTime'])) {
+                    if (\Carbon\Carbon::parse($item['scheduledEndTime'])->isPast()) {
+                        return false;
+                    }
                 }
 
                 return true;
             });
 
-            $options['items'] = array_values($options['items']);
+            $specificZoneItems = array_filter($validItems, function ($item) use ($zone) {
+                return isset($item['zone']) && $item['zone'] === $zone;
+            });
+
+            if (! empty($specificZoneItems)) {
+                $options['items'] = array_values($specificZoneItems);
+            } else {
+                $allZoneItems = array_filter($validItems, function ($item) {
+                    return ! isset($item['zone']) || $item['zone'] === 'all';
+                });
+                $options['items'] = array_values($allZoneItems);
+            }
         }
 
         return $options;
