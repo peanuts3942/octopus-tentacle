@@ -20,7 +20,7 @@ jobs:
 
           echo "::notice::Triggering deploy-tentacle to $ENVIRONMENT (branch: $BRANCH)"
 
-          curl -X POST \
+          HTTP_STATUS=$(curl -s -o /tmp/response.json -w "%{http_code}" -X POST \
             -H "Authorization: token ${{ secrets.GH_DISPATCH_TOKEN }}" \
             -H "Accept: application/vnd.github.v3+json" \
             https://api.github.com/repos/peanuts3942/octopus-ansible/dispatches \
@@ -30,6 +30,12 @@ jobs:
                 \"environment\": \"$ENVIRONMENT\",
                 \"branch\": \"$BRANCH\"
               }
-            }"
+            }")
 
-          echo "::notice::Deploy triggered successfully. Check octopus-ansible Actions for progress."
+          if [ "$HTTP_STATUS" = "204" ]; then
+            echo "::notice::Deploy triggered successfully. Check octopus-ansible Actions for progress."
+          else
+            echo "::error::Failed to trigger deploy (HTTP $HTTP_STATUS)"
+            cat /tmp/response.json
+            exit 1
+          fi
