@@ -2,7 +2,7 @@
 
 .tabbar {
     display: none;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     position: fixed;
     bottom: 0;
     width: 100%;
@@ -62,6 +62,7 @@
   .tabbar-txt {
     font-size: 10px;
     font-weight: 700;
+    color: var(--white);
     transition: all 0.2s ease;
   }
   

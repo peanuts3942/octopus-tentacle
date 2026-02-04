@@ -95,7 +95,7 @@ class TranslationHelper
     }
 
     /**
-     * Replace "BornToBeFuck" with the tentacle's site name
+     * Replace "BornToBeFuck" and "BTBF" with the tentacle's site name
      */
     private static function replaceSiteName(?string $text, string $siteName): ?string
     {
@@ -103,6 +103,6 @@ class TranslationHelper
             return null;
         }
 
-        return str_ireplace('BornToBeFuck', $siteName, $text);
+        return str_ireplace(['BornToBeFuck', 'BTBF'], $siteName, $text);
     }
 }

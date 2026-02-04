@@ -14,7 +14,8 @@
 .player-container {
     position: relative;
     aspect-ratio: 16/9 !important;
-    width: 100%;
+    width: auto;
+    margin-inline: auto;
     height: calc(100vh - 360px); /* Hauteur fixe qui laisse voir la section suivante */
     min-height: 360px;
     max-height: 572px;

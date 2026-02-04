@@ -17,13 +17,6 @@
                 @include('icons.search')
             </button>
         </form>
-
-        {{-- Autocomplete dropdown (only if enabled) --}}
-        @if (config('search.enable_autocomplete', true))
-            <div class="search-autocomplete hidden">
-                <div class="autocomplete-content"></div>
-            </div>
-        @endif
     </div>
 
     

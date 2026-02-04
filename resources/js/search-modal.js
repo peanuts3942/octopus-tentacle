@@ -4,8 +4,6 @@ class SearchModal extends HTMLElement {
       super();
       this.searchInput = null;
       this.deleteButton = null;
-      this.slidersLoaded = false;
-      this.slidersContainer = null;
   }
 
   connectedCallback() {
@@ -20,15 +18,6 @@ class SearchModal extends HTMLElement {
   initializeElements() {
       this.searchInput = this.querySelector('.search-input');
       this.deleteButton = this.querySelector('.search-delete');
-      this.slidersContainer = this.querySelector('.search-sliders-container');
-      
-      // Créer le conteneur des sliders s'il n'existe pas
-      if (!this.slidersContainer) {
-          this.slidersContainer = document.createElement('div');
-          this.slidersContainer.className = 'search-sliders-container';
-          this.slidersContainer.style.display = 'none';
-          this.appendChild(this.slidersContainer);
-      }
   }
 
   initializeEventListeners() {
@@ -83,11 +72,6 @@ class SearchModal extends HTMLElement {
       setTimeout(() => {
           this.searchInput?.focus();
       }, 50);
-      
-      // Charger les sliders si pas encore fait
-      if (!this.slidersLoaded) {
-          this.loadSliders();
-      }
   }
 
   handleClose() {

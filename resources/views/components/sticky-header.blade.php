@@ -6,10 +6,10 @@
         </a>
 
         <div class="header-right">
-            <a href="https://t.me/m/3ps2iHw5ZjBk" rel="nofollow noopener" target="_blank" class="header-telegram socials_link_bar">
+            <!-- <a href="" rel="nofollow noopener" target="_blank" class="header-telegram socials_link_bar">
                 <span class="header-telegram-txt">Telegram</span>
                 <img src="{{ asset('images/banner/telegram.svg') }}" alt="telegram-icon" class="icon">
-            </a>
+            </a> -->
 
             <button class="search-btn open-search-modal search_header" open-search-modal>
                 @include('icons.search')
@@ -36,19 +36,19 @@
         <nav aria-label="Navigation menu mobile" itemscope itemtype="http://schema.org/SiteNavigationElement">
             <ul class="menu-nav">
                 <li class="megamenu-nav-item nav-item-with-submenu">
-                    <a href="/videos" class="menu-btn videos_menu" id="megamenu-nav_page-videos-mobile">
+                    <a href="{{ route('home') }}" class="menu-btn videos_menu" id="megamenu-nav_page-videos-mobile">
                         @include('icons.screenVideos')
                         <span class="menu-txt">Vidéos</span>
                     </a>
                 </li>
                 <li class="megamenu-nav-item nav-item-with-submenu">
-                    <a href="/categories" class="menu-btn categories_menu" id="megamenu-nav_page-categories-mobile">
+                    <a href="{{ route('category.index') }}" class="menu-btn categories_menu" id="megamenu-nav_page-categories-mobile">
                         @include('icons.categories')
                         <span class="menu-txt">Catégories</span>
                     </a>
                 </li>
                 <li class="megamenu-nav-item nav-item-with-submenu">
-                    <a href="/models" class="menu-btn models_menu" id="megamenu-nav_page-models-mobile">
+                    <a href="{{ route('model.index') }}" class="menu-btn models_menu" id="megamenu-nav_page-models-mobile">
                         @include('icons.models')
                         <span class="menu-txt">Modèles</span>
                     </a>

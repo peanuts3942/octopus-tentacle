@@ -73,14 +73,21 @@
             <span class="heading-text">{{ t__('tab_filters.more_videos') }}</span>
         </div>
 
-        <div class="videos-grid">
+        <div class="videos-grid" id="related-videos-grid">
             @foreach ($relatedVideos as $relatedVideo)
                 @include('components.cardVideo', ['video' => $relatedVideo])
             @endforeach
         </div>
 
-        @if(method_exists($relatedVideos, 'previousPageUrl'))
-            @include('components.pagination-simple', ['paginator' => $relatedVideos])
+        @if(method_exists($relatedVideos, 'hasMorePages') && $relatedVideos->hasMorePages())
+            <button
+                id="show-more-videos"
+                data-video-id="{{ $video->id }}"
+                data-next-page="2"
+                data-related-url="{{ route('video.related', ['id' => $video->id]) }}"
+            >
+                {{ t__('common.show_more_videos') }}
+            </button>
         @endif
 
     </div>

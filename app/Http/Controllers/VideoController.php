@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Services\VideoServices;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redis;
 
@@ -55,5 +56,30 @@ class VideoController extends Controller
         }
 
         return response($view);
+    }
+
+    public function relatedVideos(Request $request, int $id): JsonResponse
+    {
+        $page = max((int) $request->input('page', 2), 1);
+        $tentacleId = config('app.tentacle_id');
+
+        $video = $this->videoServices->getVideo($id);
+
+        if (! $video) {
+            abort(404);
+        }
+
+        $relatedVideos = $this->videoServices->getRelatedVideos($tentacleId, $video, $page);
+
+        $html = '';
+        foreach ($relatedVideos as $relatedVideo) {
+            $html .= view('components.cardVideo', ['video' => $relatedVideo])->render();
+        }
+
+        return response()->json([
+            'html' => $html,
+            'hasMore' => $relatedVideos->hasMorePages(),
+            'nextPage' => $page + 1,
+        ]);
     }
 }

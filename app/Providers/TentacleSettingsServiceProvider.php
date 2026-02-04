@@ -51,6 +51,7 @@ class TentacleSettingsServiceProvider extends ServiceProvider
             'linktree_url' => $themeItem['linktree_url'] ?? config('tentacle.theme.linktree_url'),
             'font_url' => $themeItem['font_url'] ?? config('tentacle.theme.font_url'),
             'font_family' => $themeItem['font_family'] ?? config('tentacle.theme.font_family'),
+            'google_tag_manager' => $themeItem['google_tag_manager'] ?? config('tentacle.theme.google_tag_manager'),
         ];
 
         config(['tentacle.theme' => $theme]);

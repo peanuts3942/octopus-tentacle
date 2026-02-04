@@ -2,7 +2,7 @@
 
     <ul class="tabbar">
         <li>
-            <a href="/categories" id="tabbar-nav_page-categories-mobile" class="tabbar-btn categories_bar" itemprop="url">
+            <a href="{{ route('category.index') }}" id="tabbar-nav_page-categories-mobile" class="tabbar-btn categories_bar" itemprop="url">
                 @include('icons.categories')
                 <span class="tabbar-txt">Catégories</span>
             </a>
@@ -14,23 +14,15 @@
             </button>
         </li>
         <li>
-            <a href="/" id="nav_page-trending-mobile" class="tabbar-btn home_bar" itemprop="url">
+            <a href="{{ route('home') }}" id="nav_page-trending-mobile" class="tabbar-btn home_bar" itemprop="url">
                 @include('icons.screenVideos')
                 <span itemprop="name" class="tabbar-txt">Vidéos</span>
             </a>
         </li>
         <li>
-            <a href="https://borntobefuck.cam"
-            target="_blank" rel="nofollow noopener" id="first-ad_link-mobile" class="tabbar-btn ad_link_bar" itemprop="url">
-                @include('icons.camera')
-                <span class="tabbar-txt">Live Cam</span>
-            </a>
-        </li>
-        <li>
-            <a href="https://t.me/m/3ps2iHw5ZjBk"
-            target="_blank" rel="nofollow noopener" id="second-ad_link-mobile" class="tabbar-btn ad_link_bar" itemprop="url">
-                @include('icons.girl')
-                <span class="tabbar-txt">Plan cul</span>
+            <a href="{{ route('model.index') }}" id="nav_page-models-mobile" class="tabbar-btn models_bar" itemprop="url">
+                @include('icons.models')
+                <span itemprop="name" class="tabbar-txt">Models</span>
             </a>
         </li>
     </ul>

@@ -282,3 +282,49 @@
   
   
   }
+
+
+#show-more-videos {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 12px 24px;
+    background-color: #1a1a1a;
+    width: fit-content;
+    margin-inline: auto;
+    margin-block: 80px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #fff;
+    border: 1px solid #333;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.1s ease;
+}
+
+#show-more-videos:hover {
+    color: var(--main-color);
+    background-color: #101010;
+    border-color: #1a1a1a;
+}
+
+#show-more-videos.loading {
+    pointer-events: none;
+    color: transparent;
+    position: relative;
+}
+
+#show-more-videos.loading::after {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-top-color: var(--main-color);
+    border-radius: 50%;
+    animation: showMoreSpin 0.6s linear infinite;
+}
+
+@keyframes showMoreSpin {
+    to { transform: rotate(360deg); }
+}

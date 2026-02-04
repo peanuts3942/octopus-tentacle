@@ -34,6 +34,9 @@
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+.header-desktop .search-bar-header {
     margin-left: auto;
 }
 /* 

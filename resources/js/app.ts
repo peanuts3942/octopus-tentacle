@@ -9,6 +9,7 @@ import './search-modal.js';
 import './sticky-header.js';
 import './player-ad-overlay.js';
 import './ads.js';
+import './show-more-videos.js';
 
 // const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
@@ -43,8 +44,9 @@ function initVideoPreview() {
     
     videoThumbnails.forEach((thumbnail) => {
         const previewUrl = thumbnail.getAttribute('data-preview-url');
-        
-        if (!previewUrl) return;
+
+        if (!previewUrl || thumbnail.hasAttribute('data-preview-init')) return;
+        thumbnail.setAttribute('data-preview-init', '');
         
         // Cache des éléments DOM pour cette thumbnail
         const container = thumbnail.parentElement;
@@ -390,6 +392,9 @@ function initMenu() {
     });
 }
 
+
+(window as any).formatElements = formatElements;
+(window as any).initVideoPreview = initVideoPreview;
 
 document.addEventListener('DOMContentLoaded', async () => {
     initVideoPreview();

@@ -123,6 +123,8 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    'seo_enable_referencing' => env('SEO_ENABLE_REFERENCING', false),
+
     /*
     |--------------------------------------------------------------------------
     | Tentacle Configuration

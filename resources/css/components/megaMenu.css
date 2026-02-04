@@ -190,6 +190,7 @@ body.search-modal-open {
     font-size: 20px;
     font-weight: 800;
     white-space: nowrap;
+    color: var(--white);
 }
 
 
