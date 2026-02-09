@@ -97,9 +97,12 @@ services:
 networks:
   tentacle_frontend:
     driver: bridge
+    driver_opts:
+      com.docker.network.driver.mtu: 1400
   tentacle_backend:
     driver: bridge
-    internal: true
+    driver_opts:
+      com.docker.network.driver.mtu: 1400
 
 volumes:
   redis_data:
