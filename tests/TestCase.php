@@ -13,5 +13,10 @@ abstract class TestCase extends BaseTestCase
         }
 
         parent::setUp();
+
+        $dbName = $this->app->make('db')->getDatabaseName();
+        if ($dbName !== 'btbf_octopus_testing') {
+            $this->fail("Tests must run against btbf_octopus_testing, got: {$dbName}");
+        }
     }
 }
