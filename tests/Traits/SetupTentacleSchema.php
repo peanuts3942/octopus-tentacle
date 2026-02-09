@@ -15,6 +15,10 @@ trait SetupTentacleSchema
 {
     protected function setUpTentacleSchema(): void
     {
+        Schema::dropIfExists('tentacle_settings');
+        Schema::dropIfExists('tentacles');
+        Schema::dropIfExists('octopus_users');
+
         Schema::create('tentacles', function (Blueprint $table) {
             $table->id();
             $table->string('name');

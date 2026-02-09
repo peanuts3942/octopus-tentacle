@@ -8,7 +8,10 @@ abstract class TestCase extends BaseTestCase
 {
     protected function setUp(): void
     {
+        if (env('APP_ENV') === 'production') {
+            $this->fail('Tests cannot run in production environment.');
+        }
+
         parent::setUp();
-        $this->markTestSkipped('Tests temporarily disabled');
     }
 }
